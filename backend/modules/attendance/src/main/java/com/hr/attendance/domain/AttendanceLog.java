@@ -31,17 +31,22 @@ public class AttendanceLog {
     @Column(name = "check_out_time")
     private LocalDateTime checkOutTime;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AttendanceStatus status = AttendanceStatus.NORMAL;
+    @Column(name = "work_type")
+    private String workType; // e.g., "NORMAL", "REMOTE"
 
-    public enum AttendanceStatus {
-        NORMAL, LATE, ABSENT, VACATION
-    }
+    @Column(name = "ip_address")
+    private String ipAddress;
 
-    public AttendanceLog(Long companyId, Long userId, LocalDate date) {
+    public AttendanceLog(Long companyId, Long userId, LocalDate date, LocalDateTime checkInTime, String workType, String ipAddress) {
         this.companyId = companyId;
         this.userId = userId;
         this.date = date;
+        this.checkInTime = checkInTime;
+        this.workType = workType;
+        this.ipAddress = ipAddress;
+    }
+
+    public void checkOut(LocalDateTime checkOutTime) {
+        this.checkOutTime = checkOutTime;
     }
 }
