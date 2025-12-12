@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080'; // Docker Environment
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'; // Docker Environment
 
 export const client = axios.create({
     baseURL: BASE_URL,

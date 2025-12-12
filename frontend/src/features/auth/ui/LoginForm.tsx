@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
 import { login, LoginRequest } from '../api/authApi';
@@ -8,6 +9,8 @@ export const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,9 +23,9 @@ export const LoginForm = () => {
                 throw new Error('Please fill in all fields');
             }
 
-            await login({ email, passwordHash: password }); // In real app, hash on client or send raw HTTPS
-            alert('Login Successful! Redirecting...');
-            // Navigation would happen here
+            await login({ email, password: password });
+            // Redirect to dashboard
+            router.push('/dashboard');
         } catch (err: any) {
             setError(err.message || 'Login failed');
         } finally {

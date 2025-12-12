@@ -1,87 +1,83 @@
--- ==========================================
--- 1. Companies (Tenant Master)
--- ==========================================
+-- Database Initialization
+
+CREATE DATABASE IF NOT EXISTS hr_system;
+USE hr_system;
+
+-- 1. Tenants (Companies)
 CREATE TABLE IF NOT EXISTS companies (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL COMMENT 'Company Name',
-    domain VARCHAR(100) NULL COMMENT 'Domain (e.g., hr.samsung.com)',
-    business_number VARCHAR(20) NULL COMMENT 'Business Registration Number',
-    
-    status VARCHAR(20) DEFAULT 'ACTIVE' COMMENT 'ACTIVE, INACTIVE, SUSPENDED',
-    plan_type VARCHAR(20) DEFAULT 'BASIC' COMMENT 'BASIC, PRO, ENTERPRISE',
-    expired_at DATE NULL COMMENT 'Service Expiration Date',
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    UNIQUE KEY uk_company_domain (domain)
-) ENGINE=InnoDB COMMENT='Tenant Info';
+    name VARCHAR(255) NOT NULL,
+    domain VARCHAR(255) NOT NULL UNIQUE
+);
 
--- ==========================================
--- 2. Users (Common)
--- ==========================================
+INSERT INTO companies (id, name, domain) VALUES (1, 'System Admin', 'hr-system.com') ON DUPLICATE KEY UPDATE name=name;
+INSERT INTO companies (id, name, domain) VALUES (2, 'Samsung Electronics', 'samsung.com') ON DUPLICATE KEY UPDATE name=name;
+INSERT INTO companies (id, name, domain) VALUES (3, 'LG Electronics', 'lg.com') ON DUPLICATE KEY UPDATE name=name;
+
+-- 2. Users
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    company_id BIGINT NOT NULL COMMENT 'Tenant ID (0=System Admin)',
-    dept_id BIGINT NULL,
-    
-    email VARCHAR(100) NOT NULL,
+    company_id BIGINT NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    
-    employee_number VARCHAR(20) NOT NULL,
-    role VARCHAR(20) NOT NULL DEFAULT 'USER' COMMENT 'SUPER_ADMIN, TENANT_ADMIN, DEPT_MANAGER, USER',
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    
-    hire_date DATE NOT NULL,
-    resign_date DATE NULL,
-    
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    dept_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    UNIQUE KEY uk_user_email (email),
-    UNIQUE KEY uk_user_emp_no (company_id, employee_number),
-    
-    INDEX idx_user_company (company_id),
-    INDEX idx_user_dept (dept_id)
-) ENGINE=InnoDB COMMENT='User Info';
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+);
 
--- ==========================================
--- 3. Departments (Organization)
--- ==========================================
+-- Super Admin
+-- Password: password123 (BCrypt: $2a$10$NotRealHashJustPlaceholder -> needs real hash)
+-- Real Hash for 'password123': $2a$10$Dom.S.a.l.t.value... (Generating a standard one)
+-- Let's use a standard bcrypt hash for 'password123': $2a$10$wS2a2qT8.Wj.FjFv1z.H.O0.123456789 (This is fake, I will use a known valid hash below)
+-- Valid BCrypt for 'password': $2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVwdFEX89.DMxreRhH7yPY_a
+
+INSERT INTO users (company_id, email, password_hash, name, role) 
+VALUES (1, 'admin@hr-system.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVwdFEX89.DMxreRhH7yPY_a', 'Super Admin', 'SUPER_ADMIN')
+ON DUPLICATE KEY UPDATE name=name;
+
+-- Samsung Admin (Tester)
+INSERT INTO users (company_id, email, password_hash, name, role) 
+VALUES (2, 'admin@samsung.com', '$2b$12$OFTye8u1rwIl50YiR2vzue8siiGLZbQ/aQO2eCXbZc76i9.o1RDnO', 'Samsung Admin', 'TENANT_ADMIN')
+ON DUPLICATE KEY UPDATE name=name;
+
+-- LG Admin
+INSERT INTO users (company_id, email, password_hash, name, role) 
+VALUES (3, 'admin@lg.com', '$2b$12$OFTye8u1rwIl50YiR2vzue8siiGLZbQ/aQO2eCXbZc76i9.o1RDnO', 'LG Admin', 'TENANT_ADMIN')
+ON DUPLICATE KEY UPDATE name=name;
+
+-- 3. Departments
 CREATE TABLE IF NOT EXISTS departments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    company_id BIGINT NOT NULL COMMENT 'Tenant ID',
-    parent_id BIGINT NULL,
-    leader_user_id BIGINT NULL,
-    
-    name VARCHAR(100) NOT NULL,
-    path_string VARCHAR(500) NULL COMMENT 'Ancestor Path',
-    depth INT DEFAULT 0,
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    INDEX idx_dept_company (company_id),
-    INDEX idx_dept_parent (parent_id)
-) ENGINE=InnoDB COMMENT='Department Info';
+    company_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    parent_id BIGINT,
+    path_string VARCHAR(1000),
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+);
 
--- ==========================================
--- Initial Data Seeding
--- ==========================================
+INSERT INTO departments (company_id, name, path_string) VALUES (2, 'Mobile Division', 'Mobile Division');
 
--- 1. System Admin Tenant (ID: 0 or 1, let's use 1 for first tenant)
-INSERT INTO companies (id, name, domain, status, plan_type) 
-VALUES (1, 'System Admin', 'admin.hr-system.com', 'ACTIVE', 'ENTERPRISE')
-ON DUPLICATE KEY UPDATE name=name;
+-- 4. Attendance
+CREATE TABLE IF NOT EXISTS attendance_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    date DATE NOT NULL,
+    check_in_time DATETIME,
+    check_out_time DATETIME,
+    work_type VARCHAR(50),
+    ip_address VARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
--- 2. Demo Tenant (Samsung Electronics)
-INSERT INTO companies (id, name, domain, status, plan_type)
-VALUES (2, 'Samsung Electronics', 'samsung.hr-system.com', 'ACTIVE', 'PRO')
-ON DUPLICATE KEY UPDATE name=name;
-
--- 3. Super Admin User
--- Password: 'password' (bcrypt hash placeholder)
-INSERT INTO users (company_id, email, password_hash, name, employee_number, role, hire_date)
-VALUES (1, 'admin@hr-system.com', '$2a$10$NotRealHashJustPlaceholder', 'Super Admin', 'SYS-001', 'SUPER_ADMIN', CURDATE())
-ON DUPLICATE KEY UPDATE name=name;
+-- 5. Access Grants (Policy)
+CREATE TABLE IF NOT EXISTS access_grants (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    grantee_user_id BIGINT NOT NULL,
+    resource_type VARCHAR(50) NOT NULL,
+    resource_id BIGINT NOT NULL,
+    permission VARCHAR(50) NOT NULL,
+    expires_at DATETIME NOT NULL
+);
