@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "../shared/styles/main.css";
+
 
 export const metadata: Metadata = {
     title: "HR System",
