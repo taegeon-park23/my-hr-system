@@ -1,0 +1,36 @@
+dependencies {
+    implementation project(':common')
+    implementation project(':modules:user') 
+    // Policy needs to know about User Roles potentially, or just IDs? 
+    // Ideally Policy shouldn't depend on User domain, but might need UserModuleApi.
+    // However, in this architecture, modules depends on common.
+    // If Policy needs to call UserModuleApi, it should depend on project(':modules:user').
+    // But be careful of circular dependency if User needs Policy.
+    // Usually Policy is low level or high level? 
+    // User -> Policy (for Auth check)? Or Policy -> User (for Role lookup)?
+    // Architecture Def says: "modules -> modules (Forbidden direct ref, use API)".
+    // Implementation: we often put API interfaces in a separate jar or just rely on runtime injection if in same monolith.
+    // But here we are separating by source sets. 
+    // To allow `PolicyModuleApiImpl` to call `UserModuleApi`, `policy` module must `implementation project(':modules:user')`.
+    // And if `User` module needs to call `Policy` (e.g. for Permission check), it needs `project(':modules:policy')`.
+    // This creates CYCLIC DEPENDENCY in Gradle.
+    
+    // SOLUTION: We need a shared `api` module or `interfaces` module if we want strict separation.
+    // OR, we just define the interface in the provider module, and the consumer only depends on the interface.
+    // But in this simple specific Gradle setup, `implementation project(':modules:user')` pulls in the whole user module including domain.
+    // The strict "No Domain Access" rule must be enforced by ArchUnit, not just Gradle (unless we split api/impl).
+    
+    // For now, let's assume Policy is stand-alone or depends on User API.
+    // Let's add user module dependency BUT we must be careful.
+    // Actually, Policy usually receives `userId` and `role` as arguments, OR it looks them up.
+    // If `resolveDataScope` takes `userId`, it might need to look up `deptId` from UserModule.
+    
+    implementation project(':modules:user') 
+    implementation project(':modules:org') // For Dept hierarchy lookup if needed
+    
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
