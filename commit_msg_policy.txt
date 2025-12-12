@@ -1,7 +1,0 @@
-feat(policy): Policy Module(PDP) 및 DataScope 로직 구현
-
-- 모듈: Policy 모듈 구조 및 build.gradle 생성
-- 도메인: AccessGrant Entity 및 Repository 구현 (임시 권한)
-- 로직: PolicyService 내 DataScope 계산 로직 구현 (Role/Dept 기반)
-- API: PolicyModuleApi 인터페이스 및 구현체 작성
-- 문서: Phase 2 Policy Module 완료 보고서 작성

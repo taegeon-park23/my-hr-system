@@ -1,0 +1,15 @@
+dependencies {
+    implementation project(':common')
+    // Approval might need User/Org info to determine approvers?
+    // According to Plan: "Strategy Pattern".
+    // But for MVP, usually we need to look up User/Org.
+    // If we use ModuleApi, we depend on User/Org modules (at least their APIs if split, or the module if not).
+    implementation project(':modules:user')
+    implementation project(':modules:org')
+    
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
