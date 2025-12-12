@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(':common')
+    
+    // Dependencies on Domain Modules if needed for Entities (though Queries usually use raw SQL DTOs, they might share some types)
+    // implementation project(':modules:org') 
+    
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
