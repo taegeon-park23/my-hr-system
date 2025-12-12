@@ -9,4 +9,5 @@ include 'modules:org'
 include 'queries'
 include 'modules:vacation'
 include 'modules:attendance'
-include 'modules:payroll'
+include 'app'
+

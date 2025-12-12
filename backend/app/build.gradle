@@ -1,0 +1,15 @@
+dependencies {
+    implementation project(':common')
+    implementation project(':modules:tenant')
+    implementation project(':modules:user')
+    implementation project(':modules:org')
+    implementation project(':modules:approval')
+    implementation project(':modules:vacation')
+    implementation project(':modules:attendance')
+    implementation project(':modules:payroll')
+    implementation project(':queries')
+    
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+}
