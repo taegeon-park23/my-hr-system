@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # 1. Main Database (MySQL 8.0)
+  hr-db:
+    image: mysql:8.0
+    container_name: hr-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hr_system
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+
+  # 2. Redis (Cache & Session)
+  hr-redis:
+    image: redis:alpine
+    container_name: hr-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # 3. MailHog (Local SMTP Server)
+  hr-mail:
+    image: mailhog/mailhog
+    container_name: hr-mail
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    restart: always

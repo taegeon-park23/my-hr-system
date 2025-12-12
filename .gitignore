@@ -1,0 +1,15 @@
+# Global
+.DS_Store
+*.log
+node_modules/
+dist/
+build/
+.gradle/
+.idea/
+*.iml
+.vscode/
+
+# Environment
+.env
+.env.local
+.env.*.local

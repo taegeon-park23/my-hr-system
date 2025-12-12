@@ -1,0 +1,7 @@
+feat(core): 프로젝트 초기 세팅 및 핵심 모듈(Tenant, User, Org) 구현
+
+- 인프라: Docker Compose, MySQL, Redis, MailHog 구성
+- 백엔드: Spring Boot 멀티 모듈 및 공통 DTO 구현
+- 모듈: Tenant, User, Organization 모듈 구현 (Entity, Service, Controller, API)
+- 프론트엔드: Next.js 프로젝트 초기화
+- 문서: 구현 전략 및 Phase 1, 2 완료 보고서 작성

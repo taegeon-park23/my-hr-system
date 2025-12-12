@@ -1,0 +1,9 @@
+rootProject.name = 'hr-system'
+
+include 'common'
+include 'modules:user'
+include 'modules:policy'
+include 'modules:approval'
+include 'modules:tenant'
+include 'modules:org'
+include 'queries'
