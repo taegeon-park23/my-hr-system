@@ -31,6 +31,24 @@ export default function AttendancePage() {
         fetchAll();
     }, []);
 
+    const handleCheckIn = async () => {
+        try {
+            await import('@/features/attendance/api/attendanceApi').then(api => api.checkIn());
+            alert('Checked In Successfully!');
+        } catch (e) {
+            alert('Failed to Check In');
+        }
+    };
+
+    const handleCheckOut = async () => {
+        try {
+            await import('@/features/attendance/api/attendanceApi').then(api => api.checkOut());
+            alert('Checked Out Successfully!');
+        } catch (e) {
+            alert('Failed to Check Out');
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="md:flex md:items-center md:justify-between">
@@ -39,8 +57,9 @@ export default function AttendancePage() {
                         Attendance & Vacation
                     </h2>
                 </div>
-                <div className="mt-4 flex md:mt-0 md:ml-4">
-                    <Button>Check In</Button>
+                <div className="mt-4 flex space-x-3 md:mt-0 md:ml-4">
+                    <Button onClick={handleCheckIn}>Check In</Button>
+                    <Button variant="secondary" onClick={handleCheckOut}>Check Out</Button>
                 </div>
             </div>
 
