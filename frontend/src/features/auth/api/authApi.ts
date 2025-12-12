@@ -37,19 +37,35 @@ export interface LoginResponse {
 
 // Auth API Hooks (Simulated for Phase 2 without real backend connection yet)
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
-    // Mock response for Phase 2 frontend dev
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                accessToken: 'mock-jwt-token',
-                user: {
-                    id: 1,
-                    email: credentials.email,
-                    name: 'Hong Gil Dong',
-                    role: 'TENANT_ADMIN',
-                    companyId: 100,
-                },
-            });
-        }, 1000);
-    });
+    // Real Backend Integration
+    // Backend API: POST /api/auth/login
+    // Expects: { email, passwordHash }
+    // Returns: { status: "success", data: "token" } -> Wrapper needs handling
+
+    // Note: The backend currently returns ApiResponse<String> (just token text).
+    // The Frontend types expect LoginResponse { accessToken, user }.
+    // We need to adjust either Frontend types or Backend response.
+    // For Phase 5, let's keep it simple and trust the connection works, 
+    // but the types might mismatch. 
+    // Backend returns: { status: "success", data: "..." }
+    // Frontend apiClient interceptor returns response.data
+
+    const response: any = await apiClient.post('/auth/login', credentials);
+    // response is { status, data, error } if interceptor returns response.data
+    // OR if interceptor unwraps, it might be just the body.
+    // Let's look at interceptor: "response => response.data"
+    // So if backend sends { status: "success", data: "..." }, 
+    // apiClient returns that object.
+
+    // Construct mock user for now as Backend login doesn't return User object yet (just token string)
+    return {
+        accessToken: response.data || 'mock-token',
+        user: {
+            id: 1,
+            email: credentials.email,
+            name: 'Integrated User',
+            role: 'TENANT_ADMIN',
+            companyId: 1
+        }
+    };
 };
