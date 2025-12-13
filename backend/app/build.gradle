@@ -7,6 +7,8 @@ dependencies {
     implementation project(':modules:vacation')
     implementation project(':modules:attendance')
     implementation project(':modules:payroll')
+    implementation project(':modules:evaluation')
+    implementation project(':modules:asset')
     implementation project(':queries')
     
     implementation 'org.springframework.boot:spring-boot-starter-web'

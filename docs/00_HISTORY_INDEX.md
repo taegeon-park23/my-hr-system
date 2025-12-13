@@ -135,3 +135,15 @@ This document tracks the relationship between planning documents and their execu
 **Execution Reports:**
 - `done/backend_assets_report.md`
 - `done/frontend_assets_report.md`
+
+## Level 19: Backend Structure Normalization (Priority)
+**Plan:** `plan/refactor_backend_structure_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/refactor_backend_structure_report.md`
+
+## Level 20: Notification Module Implementation
+**Plan:** `plan/backend_notification_plan.md` (To be created)
+**Status:** 📅 Planned
+**Execution Reports:**
+- (Pending)

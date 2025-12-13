@@ -18,19 +18,3 @@ public class EvaluationCycleDto {
     private LocalDate endDate;
     private EvaluationCycle.CycleStatus status;
 }
-
-@Data
-public class CreateCycleRequest {
-    private Long companyId;
-    private String title;
-    private Integer year;
-    private EvaluationCycle.CycleType type;
-    private LocalDate startDate;
-    private LocalDate endDate;
-}
-
-@Data
-public class SubmitEvaluationRequest {
-    private BigDecimal score;
-    private String comment;
-}

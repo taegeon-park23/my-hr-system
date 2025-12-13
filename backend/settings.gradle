@@ -10,5 +10,7 @@ include 'queries'
 include 'modules:vacation'
 include 'modules:attendance'
 include 'modules:payroll'
+include 'modules:evaluation'
+include 'modules:asset'
 include 'app'
 

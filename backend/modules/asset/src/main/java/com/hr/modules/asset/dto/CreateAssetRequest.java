@@ -2,7 +2,6 @@ package com.hr.modules.asset.dto;
 
 import com.hr.modules.asset.domain.Asset;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -15,14 +14,4 @@ public class CreateAssetRequest {
     private LocalDate purchaseDate;
     private BigDecimal purchasePrice;
     private String note;
-}
-
-@Data
-public class AssignAssetRequest {
-    private Long userId;
-}
-
-@Data
-public class UpdateAssetStatusRequest {
-    private Asset.AssetStatus status;
 }
