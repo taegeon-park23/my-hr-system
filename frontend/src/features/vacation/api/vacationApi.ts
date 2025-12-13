@@ -49,7 +49,7 @@ export const vacationApi = {
 };
 
 export function useMyVacationBalance(userId: number | undefined, year: number) {
-    const { data, error, isLoading } = useSWR<VacationBalance>(
+    const { data, error, isLoading, mutate } = useSWR<VacationBalance>(
         userId ? queryKeys.vacation.balance(userId, year) : null,
         fetcher
     );
@@ -58,6 +58,7 @@ export function useMyVacationBalance(userId: number | undefined, year: number) {
         balance: data,
         isLoading,
         isError: error,
+        mutate,
     };
 }
 

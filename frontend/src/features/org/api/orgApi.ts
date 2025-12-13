@@ -4,14 +4,15 @@ import { queryKeys } from '@/shared/api/queryKeys';
 import { Department } from '../model/types';
 
 export const useOrgTree = () => {
-    const { data, error, isLoading } = useSWR<Department[]>(
+    const { data, error, isLoading, mutate } = useSWR<Department[]>(
         queryKeys.org.tree,
         fetcher
     );
     return {
         data: data || [],
         isLoading,
-        isError: error
+        isError: error,
+        mutate
     };
 };
 

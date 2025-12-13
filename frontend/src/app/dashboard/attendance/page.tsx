@@ -8,21 +8,27 @@ import { VacationStatus } from '@/features/vacation/ui/VacationStatus';
 import { AttendanceLog } from '@/features/attendance/model/types';
 import { Button } from '@/shared/ui/Button';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
+import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
+import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 
 export default function AttendancePage() {
     const [logs, setLogs] = useState<AttendanceLog[]>([]);
     const [logsLoading, setLogsLoading] = useState(true);
+    const [logsError, setLogsError] = useState<Error | null>(null);
     const { user } = useAuthStore();
-    const { balance, isLoading: balanceLoading } = useMyVacationBalance(user?.id, new Date().getFullYear());
+    const { balance, isLoading: balanceLoading, isError: balanceError, mutate } = useMyVacationBalance(user?.id, new Date().getFullYear());
 
     const loading = logsLoading || balanceLoading;
 
     useEffect(() => {
         const fetchLogs = async () => {
             setLogsLoading(true);
+            setLogsError(null);
             try {
                 const logsData = await getMonthlyAttendance(2024, 12);
                 setLogs(logsData);
+            } catch (err) {
+                setLogsError(err instanceof Error ? err : new Error('Failed to load attendance'));
             } finally {
                 setLogsLoading(false);
             }
@@ -49,39 +55,50 @@ export default function AttendancePage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="md:flex md:items-center md:justify-between">
-                <div className="flex-1 min-w-0">
-                    <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                        Attendance & Vacation
-                    </h2>
+        <ErrorBoundary>
+            <div className="space-y-6">
+                <div className="md:flex md:items-center md:justify-between">
+                    <div className="flex-1 min-w-0">
+                        <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                            Attendance & Vacation
+                        </h2>
+                    </div>
+                    <div className="mt-4 flex space-x-3 md:mt-0 md:ml-4">
+                        <Button onClick={handleCheckIn}>Check In</Button>
+                        <Button variant="secondary" onClick={handleCheckOut}>Check Out</Button>
+                    </div>
                 </div>
-                <div className="mt-4 flex space-x-3 md:mt-0 md:ml-4">
-                    <Button onClick={handleCheckIn}>Check In</Button>
-                    <Button variant="secondary" onClick={handleCheckOut}>Check Out</Button>
-                </div>
-            </div>
 
-            {loading || !balance ? (
-                <div className="text-center py-10">Loading...</div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="md:col-span-1">
-                        <VacationStatus balance={balance} />
-                        <div className="mt-6 bg-white shadow rounded-lg p-4">
-                            <h3 className="font-medium text-gray-900">Quick Actions</h3>
-                            <div className="mt-4 space-y-2">
-                                <Button variant="secondary" className="w-full">Request Vacation</Button>
-                                <Button variant="secondary" className="w-full">Correction Request</Button>
+                {logsError || balanceError ? (
+                    <ApiErrorFallback
+                        error={logsError || balanceError}
+                        title="데이터 로드 실패"
+                        onRetry={() => {
+                            window.location.reload();
+                        }}
+                    />
+                ) : loading || !balance ? (
+                    <div className="text-center py-10">Loading...</div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="md:col-span-1">
+                            <VacationStatus balance={balance} />
+                            <div className="mt-6 bg-white shadow rounded-lg p-4">
+                                <h3 className="font-medium text-gray-900">Quick Actions</h3>
+                                <div className="mt-4 space-y-2">
+                                    <Button variant="secondary" className="w-full">Request Vacation</Button>
+                                    <Button variant="secondary" className="w-full">Correction Request</Button>
+                                </div>
                             </div>
                         </div>
+                        <div className="md:col-span-2">
+                            <AttendanceCalendar logs={logs} />
+                        </div>
                     </div>
-                    <div className="md:col-span-2">
-                        <AttendanceCalendar logs={logs} />
-                    </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </ErrorBoundary>
     );
 }
+
 
