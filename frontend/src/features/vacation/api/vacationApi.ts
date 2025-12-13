@@ -1,4 +1,5 @@
 import { client } from '@/shared/api/client';
+import { ApiResponse } from '@/shared/api/types';
 
 export interface VacationBalance {
     id: number;
@@ -23,13 +24,13 @@ export interface VacationRequest {
 
 export const vacationApi = {
     getMyBalance: async (year: number, userId: number) => {
-        const response = await client.get<any>(`/vacations/balance?year=${year}&userId=${userId}`);
-        return response.data.data as VacationBalance;
+        const response = await client.get<ApiResponse<VacationBalance>>(`/vacations/balance?year=${year}&userId=${userId}`);
+        return response.data.data;
     },
 
     getMyRequests: async (userId: number) => {
-        const response = await client.get<any>(`/vacations/requests?userId=${userId}`);
-        return response.data.data as VacationRequest[];
+        const response = await client.get<ApiResponse<VacationRequest[]>>(`/vacations/requests?userId=${userId}`);
+        return response.data.data;
     },
 
     requestVacation: async (data: {
@@ -39,8 +40,8 @@ export const vacationApi = {
         endDate: string;
         reason: string;
     }) => {
-        const response = await client.post<any>(`/vacations/request?userId=${data.userId}`, data);
-        return response.data.data as VacationRequest;
+        const response = await client.post<ApiResponse<VacationRequest>>(`/vacations/request?userId=${data.userId}`, data);
+        return response.data.data;
     },
 };
 
