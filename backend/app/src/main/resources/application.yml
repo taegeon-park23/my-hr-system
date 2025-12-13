@@ -16,6 +16,15 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: hr-mail
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 logging:
   level:
     org.hibernate.SQL: DEBUG

@@ -13,27 +13,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ApprovalService implements ApprovalModuleApi {
 
+
     private final ApprovalRequestRepository approvalRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Override
     public Long createApproval(ApprovalRequestCommand command) {
         ApprovalRequest request = new ApprovalRequest();
-        // Since ApprovalRequest might not have Builder or setters matching Command exactly,
-        // we map it manually or usage a mapper.
-        // Assuming ApprovalRequest has public setters or a proper constructor.
-        // Based on plan and typical entity structure:
         
         request.setCompanyId(command.getCompanyId());
         request.setRequesterUserId(command.getRequesterId());
         request.setResourceType(command.getResourceType());
         request.setResourceId(command.getResourceId());
         request.setTitle(command.getTitle());
-        request.setStatus("PENDING"); // Default
-        
-        // Step logic is skipped for MVP (Simple one-step or auto-approve logic could go here)
-        // For now, just save the request header.
+        request.setStatus("PENDING"); 
         
         ApprovalRequest saved = approvalRepository.save(request);
+        
+        // Publish Event
+        eventPublisher.publishEvent(new com.hr.common.event.ApprovalRequestedEvent(
+            saved.getCompanyId(),
+            saved.getId(),
+            saved.getRequesterUserId(),
+            saved.getTitle(),
+            saved.getResourceType()
+        ));
+        
         return saved.getId();
     }
 }

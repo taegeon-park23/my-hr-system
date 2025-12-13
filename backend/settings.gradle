@@ -12,5 +12,6 @@ include 'modules:attendance'
 include 'modules:payroll'
 include 'modules:evaluation'
 include 'modules:asset'
+include 'modules:notification'
 include 'app'
 

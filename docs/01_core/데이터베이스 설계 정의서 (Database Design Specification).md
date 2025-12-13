@@ -398,3 +398,25 @@ CREATE TABLE assets (
 
 
 
+
+### **3.7 알림 모듈 (Notification) - [NEW]**
+
+-- 17. Notification Logs
+CREATE TABLE notification_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    recipient_email VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('SENT', 'FAILED') NOT NULL,
+    error_message TEXT NULL,
+    
+    event_type VARCHAR(100) NOT NULL COMMENT '이벤트 유형 (APPROVAL_REQ, EVAL_START...)',
+    related_resource_id BIGINT NULL,
+    
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_noti_company (company_id),
+    INDEX idx_noti_recipient (recipient_email)
+) ENGINE=InnoDB COMMENT='알림 발송 이력';
+

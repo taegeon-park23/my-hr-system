@@ -9,6 +9,7 @@ dependencies {
     implementation project(':modules:payroll')
     implementation project(':modules:evaluation')
     implementation project(':modules:asset')
+    implementation project(':modules:notification')
     implementation project(':queries')
     
     implementation 'org.springframework.boot:spring-boot-starter-web'

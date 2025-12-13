@@ -249,3 +249,19 @@ CREATE TABLE IF NOT EXISTS assets (
     FOREIGN KEY (company_id) REFERENCES companies(id),
     FOREIGN KEY (current_user_id) REFERENCES users(id)
 );
+
+-- 17. Notification Logs [NEW]
+CREATE TABLE IF NOT EXISTS notification_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    recipient_email VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('SENT', 'FAILED') NOT NULL,
+    error_message TEXT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    related_resource_id BIGINT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_noti_company (company_id),
+    INDEX idx_noti_recipient (recipient_email)
+);
