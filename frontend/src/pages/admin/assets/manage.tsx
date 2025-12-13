@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Layout from "@/app/layout";
+import DashboardLayout from "@/app/dashboard/layout";
 import { AssetListTable } from "@/features/asset/ui/AssetListTable";
 import { AssetCreateModal } from "@/features/asset/ui/AssetCreateModal";
 import { Button } from "@/shared/ui/Button";
@@ -12,7 +12,7 @@ export default function AssetManagePage() {
     const [refreshKey, setRefreshKey] = useState(0); // Trigger table refresh
 
     return (
-        <Layout>
+        <DashboardLayout>
             <div className="space-y-6">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-gray-900">자산 관리</h1>
@@ -31,6 +31,6 @@ export default function AssetManagePage() {
                     onSuccess={() => setRefreshKey(prev => prev + 1)}
                 />
             </div>
-        </Layout>
+        </DashboardLayout>
     );
 }

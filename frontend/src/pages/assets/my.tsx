@@ -1,5 +1,5 @@
 import React from "react";
-import Layout from "@/app/layout";
+import DashboardLayout from "@/app/dashboard/layout";
 import { useMyAssets } from "@/features/asset/api/assetApi";
 import { MyAssetCard } from "@/features/asset/ui/MyAssetCard";
 
@@ -10,7 +10,7 @@ export default function MyAssetsPage() {
     const { assets, isLoading } = useMyAssets(CURRENT_USER_ID);
 
     return (
-        <Layout>
+        <DashboardLayout>
             <div className="space-y-6">
                 <h1 className="text-2xl font-bold text-gray-900">내 자산 현황</h1>
 
@@ -28,6 +28,6 @@ export default function MyAssetsPage() {
                     </div>
                 )}
             </div>
-        </Layout>
+        </DashboardLayout>
     );
 }
