@@ -1,6 +1,8 @@
 "use client";
 
 import React from 'react';
+import { APP_CONFIG } from '@/shared/config/constants';
+
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { useMyVacationBalance, useMyVacationRequests } from '@/features/vacation/api/vacationApi';
@@ -12,7 +14,8 @@ export default function VacationPage() {
     const router = useRouter();
     const { user } = useAuthStore();
 
-    const { balance, isLoading: isBalanceLoading } = useMyVacationBalance(user?.id, 2025);
+    const { balance, isLoading: isBalanceLoading } = useMyVacationBalance(user?.id, APP_CONFIG.CURRENT_YEAR);
+
     const { requests, isLoading: isRequestsLoading } = useMyVacationRequests(user?.id);
 
     const isLoading = isBalanceLoading || isRequestsLoading;

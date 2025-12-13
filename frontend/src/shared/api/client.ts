@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { APP_CONFIG, STORAGE_KEYS } from '@/shared/config/constants';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'; // Docker Environment
+const BASE_URL = APP_CONFIG.API_URL;
 
 export const client = axios.create({
     baseURL: BASE_URL,
@@ -13,7 +14,7 @@ export const client = axios.create({
 // Request Interceptor: Inject Token
 client.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -27,8 +28,12 @@ client.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
-            localStorage.removeItem('accessToken');
-            window.location.href = '/login';
+            localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+            // Dispatch unauthorized event instead of direct redirect
+            // This allows the app to handle it gracefully (e.g. show toast, redirect via router)
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('auth:unauthorized'));
+            }
         }
 
         // Standardize error object
@@ -40,3 +45,4 @@ client.interceptors.response.use(
         return Promise.reject(apiError);
     }
 );
+

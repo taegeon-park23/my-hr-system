@@ -5,6 +5,7 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Modal } from "@/shared/ui/Modal";
 import { Select } from "@/shared/ui/Select";
+import { APP_CONFIG } from "@/shared/config/constants";
 
 interface Props {
     companyId: number;
@@ -42,14 +43,14 @@ export function CreateCycleModal({ companyId, isOpen, onClose, onSuccess }: Prop
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium mb-1">제목</label>
-                    <Input {...register("title", { required: true })} placeholder="예: 2025 상반기 정기평가" />
+                    <Input {...register("title", { required: true })} placeholder={`예: ${APP_CONFIG.CURRENT_YEAR} 상반기 정기평가`} />
                     {errors.title && <span className="text-red-500 text-xs">필수 입력입니다.</span>}
                 </div>
 
                 <div className="flex gap-2">
                     <div className="flex-1">
                         <label className="block text-sm font-medium mb-1">연도</label>
-                        <Input type="number" {...register("year", { required: true })} defaultValue={new Date().getFullYear()} />
+                        <Input type="number" {...register("year", { required: true })} defaultValue={APP_CONFIG.CURRENT_YEAR} />
                     </div>
                     <div className="flex-1">
                         <Select
@@ -79,4 +80,3 @@ export function CreateCycleModal({ companyId, isOpen, onClose, onSuccess }: Prop
         </Modal>
     );
 }
-

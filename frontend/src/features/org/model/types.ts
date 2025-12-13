@@ -16,6 +16,7 @@ export interface User {
     position: string;
 }
 
+
 export interface OrgNode {
     department: Department;
     members: User[];

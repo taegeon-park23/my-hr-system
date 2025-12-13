@@ -15,6 +15,7 @@ const StatCard = ({ label, value, color = "text-gray-900" }: StatProps) => (
     </div>
 );
 
+import { APP_CONFIG } from '@/shared/config/constants';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { useMyVacationBalance } from '@/features/vacation/api/vacationApi';
 import { useTodoEvaluations } from '@/features/evaluation/api/evaluationApi';
@@ -23,7 +24,8 @@ export const QuickStats = () => {
     const user = useAuthStore((state) => state.user);
 
     // Hooks should be called unconditionally, but we pass null if user is undefined to skip fetching
-    const { balance, isLoading: isBalanceLoading } = useMyVacationBalance(user?.id, 2025);
+    const { balance, isLoading: isBalanceLoading } = useMyVacationBalance(user?.id, APP_CONFIG.CURRENT_YEAR);
+
     const { todos, isLoading: isTodosLoading } = useTodoEvaluations(user?.id);
 
     // Format Vacation

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
+import { AuthListener } from "@/shared/providers/AuthListener";
 
 export const metadata: Metadata = {
     title: "HR System",
@@ -14,7 +14,11 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body>{children}</body>
+            <body>
+                <AuthListener />
+                {children}
+            </body>
         </html>
     );
 }
+

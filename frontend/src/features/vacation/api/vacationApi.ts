@@ -1,6 +1,7 @@
 import { client } from '@/shared/api/client';
-import { ApiResponse } from '@/shared/api/types';
+import { ApiResponse } from '@/shared/model/types';
 import useSWR from 'swr';
+
 import { fetcher } from '@/shared/api/fetcher';
 import { queryKeys } from '@/shared/api/queryKeys';
 
