@@ -19,55 +19,17 @@ export interface LoginResponse {
     user: User;
 }
 
-interface JwtClaims {
-    sub: string;
-    email: string;
-    role: User['role'];
-    companyId: string;
-    exp: number;
-    iat: number;
-}
-
-function parseJwt(token: string): JwtClaims | null {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload) as JwtClaims;
-    } catch (e) {
-        return null;
-    }
-}
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await client.post<ApiResponse<string>>('/auth/login', credentials);
-    const token = response.data.data;
+    const response = await client.post<ApiResponse<LoginResponse>>('/auth/login', credentials);
+    const data = response.data.data;
 
-    if (!token) {
-        throw new Error('No access token received');
+    if (!data) {
+        throw new Error('No data received');
     }
 
-    const claims = parseJwt(token);
+    localStorage.setItem('accessToken', data.accessToken);
 
-    if (!claims) {
-        throw new Error('Invalid token');
-    }
-
-    const user: User = {
-        id: Number(claims.sub),
-        email: claims.email,
-        name: claims.email.split('@')[0],
-        role: claims.role,
-        companyId: Number(claims.companyId)
-    };
-
-    localStorage.setItem('accessToken', token);
-
-    return {
-        accessToken: token,
-        user
-    };
+    return data;
 };
 

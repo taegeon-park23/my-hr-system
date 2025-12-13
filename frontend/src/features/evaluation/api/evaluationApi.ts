@@ -46,7 +46,7 @@ export interface EvaluationRecord {
     cycleTitle?: string; // Optional for display
 }
 
-const fetcher = (url: string) => client.get(url).then((res) => res.data);
+const fetcher = (url: string) => client.get(url).then((res) => res.data.data);
 
 // --- Admin ---
 

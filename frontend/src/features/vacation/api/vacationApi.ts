@@ -1,5 +1,6 @@
 import { client } from '@/shared/api/client';
 import { ApiResponse } from '@/shared/api/types';
+import useSWR from 'swr';
 
 export interface VacationBalance {
     id: number;
@@ -45,8 +46,18 @@ export const vacationApi = {
     },
 };
 
-export const getMyVacationBalance = async (): Promise<VacationBalance> => {
-    // Legacy support or direct use
-    // Using default user ID 1 for now as per legacy code implicit assumption if any
-    return vacationApi.getMyBalance(2025, 1);
-};
+
+const fetcher = (url: string) => client.get(url).then((res) => res.data.data);
+
+export function useMyVacationBalance(userId: number | undefined, year: number) {
+    const { data, error, isLoading } = useSWR<VacationBalance>(
+        userId ? `/vacations/balance?year=${year}&userId=${userId}` : null,
+        fetcher
+    );
+
+    return {
+        balance: data,
+        isLoading,
+        isError: error,
+    };
+}

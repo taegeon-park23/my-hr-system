@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/ui/Button';
 import { Input } from '@/shared/ui/Input';
-import { login, LoginRequest } from '../api/authApi';
+import { login } from '../api/authApi';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export const LoginForm = () => {
     const [error, setError] = useState('');
 
     const router = useRouter();
+    const loginUser = useAuthStore((state) => state.login);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,7 +25,9 @@ export const LoginForm = () => {
                 throw new Error('Please fill in all fields');
             }
 
-            await login({ email, password: password });
+            const response = await login({ email, password: password });
+            loginUser(response.user, response.accessToken);
+
             // Redirect to dashboard
             router.push('/dashboard');
         } catch (err: any) {

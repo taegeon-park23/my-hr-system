@@ -27,10 +27,16 @@ client.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
-            // Token expired or invalid
             localStorage.removeItem('accessToken');
             window.location.href = '/login';
         }
-        return Promise.reject(error);
+
+        // Standardize error object
+        const apiError = error.response?.data?.error || {
+            code: String(error.response?.status || 'UNKNOWN'),
+            message: error.response?.data?.message || error.message || 'An unexpected error occurred',
+        };
+
+        return Promise.reject(apiError);
     }
 );
