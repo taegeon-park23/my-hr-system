@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 interface AuthGuardProps {
     children: React.ReactNode;
@@ -10,20 +11,21 @@ interface AuthGuardProps {
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
     const router = useRouter();
-    const [authorized, setAuthorized] = useState(false);
+    const { isAuthenticated } = useAuthStore();
+    const hasChecked = useRef(false);
 
     useEffect(() => {
-        // In a real app, check for valid token in Cookie/LocalStorage or Global Store
+        if (hasChecked.current) return;
+        hasChecked.current = true;
+
         const token = localStorage.getItem('accessToken');
-
-        if (!token) {
+        if (!token && !isAuthenticated) {
             router.push('/login');
-        } else {
-            setAuthorized(true);
         }
-    }, [router]);
+    }, [isAuthenticated, router]);
 
-    if (!authorized) {
+    // If not authenticated and no token in localStorage
+    if (!isAuthenticated && typeof window !== 'undefined' && !localStorage.getItem('accessToken')) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -33,3 +35,5 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 
     return <>{children}</>;
 };
+
+

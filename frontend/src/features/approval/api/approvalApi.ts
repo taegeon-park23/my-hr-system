@@ -2,7 +2,6 @@ import { client } from '@/shared/api/client';
 import { fetcher } from '@/shared/api/fetcher';
 import { queryKeys } from '@/shared/api/queryKeys';
 import useSWR from 'swr';
-import { ApiResponse } from '@/shared/api/types';
 import { ApprovalRequest } from '../model/types';
 
 export const useApprovalInbox = (userId: number | undefined) => {

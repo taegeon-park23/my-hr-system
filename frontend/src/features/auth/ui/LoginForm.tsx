@@ -30,8 +30,9 @@ export const LoginForm = () => {
 
             // Redirect to dashboard
             router.push('/dashboard');
-        } catch (err: any) {
-            setError(err.message || 'Login failed');
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Login failed';
+            setError(message);
         } finally {
             setIsLoading(false);
         }
@@ -73,7 +74,7 @@ export const LoginForm = () => {
             </div>
 
             <div className="text-center text-sm">
-                <span className="text-gray-500">Don't have an account? </span>
+                <span className="text-gray-500">Don&apos;t have an account? </span>
                 <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
                     Contact your administrator
                 </a>

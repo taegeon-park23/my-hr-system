@@ -34,7 +34,7 @@ export default function AttendancePage() {
         try {
             await import('@/features/attendance/api/attendanceApi').then(api => api.checkIn());
             alert('Checked In Successfully!');
-        } catch (e) {
+        } catch {
             alert('Failed to Check In');
         }
     };
@@ -43,7 +43,7 @@ export default function AttendancePage() {
         try {
             await import('@/features/attendance/api/attendanceApi').then(api => api.checkOut());
             alert('Checked Out Successfully!');
-        } catch (e) {
+        } catch {
             alert('Failed to Check Out');
         }
     };
