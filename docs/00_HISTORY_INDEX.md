@@ -128,6 +128,8 @@ This document tracks the relationship between planning documents and their execu
 
 ## Level 18: Assets Module Implementation
 **Plan:** `plan/backend_assets_plan.md`
+**Plan(FE):** `plan/frontend_assets_implementation_plan.md`
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/backend_assets_report.md`
+- `done/frontend_assets_report.md`

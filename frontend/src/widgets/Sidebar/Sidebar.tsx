@@ -15,9 +15,11 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { name: 'Dashboard', href: '/dashboard' },
         { name: 'Organization', href: '/dashboard/org' },
         { name: 'Approval', href: '/dashboard/approval' },
-        { name: 'Settings', href: '/dashboard/settings' },
         { name: 'Vacation', href: '/dashboard/vacation' },
         { name: 'Payroll', href: '/dashboard/payroll' },
+        { name: 'Assets (Admin)', href: '/admin/assets/manage' },
+        { name: 'My Assets', href: '/assets/my' },
+        { name: 'Settings', href: '/dashboard/settings' },
     ];
 
     const Content = (
