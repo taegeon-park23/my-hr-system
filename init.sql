@@ -230,3 +230,22 @@ CREATE TABLE IF NOT EXISTS evaluation_records (
     FOREIGN KEY (evaluation_id) REFERENCES evaluations(id),
     FOREIGN KEY (rater_user_id) REFERENCES users(id)
 );
+
+-- 16. Assets [NEW]
+CREATE TABLE IF NOT EXISTS assets (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    current_user_id BIGINT NULL COMMENT '현재 사용자 (NULL이면 미사용)',
+    category ENUM('LAPTOP', 'DESKTOP', 'MONITOR', 'ACCESSORY', 'SOFTWARE', 'FURNITURE', 'OTHER') NOT NULL,
+    model_name VARCHAR(255) NOT NULL,
+    serial_number VARCHAR(255) NULL,
+    purchase_date DATE NULL,
+    purchase_price DECIMAL(15,2) DEFAULT 0,
+    status ENUM('AVAILABLE', 'ASSIGNED', 'BROKEN', 'REPAIRING', 'DISCARDED') NOT NULL DEFAULT 'AVAILABLE',
+    note TEXT NULL COMMENT '비고 (상세 스펙 등)',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_asset_serial (company_id, serial_number),
+    FOREIGN KEY (company_id) REFERENCES companies(id),
+    FOREIGN KEY (current_user_id) REFERENCES users(id)
+);
