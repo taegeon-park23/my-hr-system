@@ -1,5 +1,7 @@
 import useSWR from "swr";
 import { client } from "@/shared/api/client";
+import { fetcher } from "@/shared/api/fetcher";
+import { queryKeys } from "@/shared/api/queryKeys";
 
 export enum CycleStatus {
     DRAFT = "DRAFT",
@@ -46,13 +48,11 @@ export interface EvaluationRecord {
     cycleTitle?: string; // Optional for display
 }
 
-const fetcher = (url: string) => client.get(url).then((res) => res.data.data);
-
 // --- Admin ---
 
 export function useEvaluationCycles(companyId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<EvaluationCycle[]>(
-        companyId ? `/admin/evaluations/cycles?companyId=${companyId}` : null,
+        companyId ? queryKeys.evaluation.cycles : null, // Todo: Company filter handled by backend or query param? Assuming endpoint handles it or we add it to key factory later
         fetcher
     );
 
@@ -83,7 +83,7 @@ export async function closeEvaluationCycle(id: number) {
 
 export function useTodoEvaluations(userId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<EvaluationRecord[]>(
-        userId ? `/evaluations/todo?userId=${userId}` : null,
+        userId ? queryKeys.evaluation.my(userId) : null,
         fetcher
     );
 

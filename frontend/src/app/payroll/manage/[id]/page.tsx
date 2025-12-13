@@ -8,7 +8,7 @@ import { useState } from 'react';
 // Simplified view for administrator to check generated payslips
 export default function PayrollDetailPage() {
     const params = useParams();
-    const id = params.id as string;
+    const id = params?.id ? Number(params.id) : 0;
     const { payroll, isLoading: isPayrollLoading } = usePayrollDetail(id);
     const { payslips, isLoading: isPayslipsLoading } = usePayslips(id);
 

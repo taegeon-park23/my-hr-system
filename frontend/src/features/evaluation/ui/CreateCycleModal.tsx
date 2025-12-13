@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { CreateCycleRequest, EvaluationType, createEvaluationCycle } from "../api/evaluationApi";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
+import { Modal } from "@/shared/ui/Modal";
+import { Select } from "@/shared/ui/Select";
 
 interface Props {
     companyId: number;
@@ -30,51 +32,51 @@ export function CreateCycleModal({ companyId, isOpen, onClose, onSuccess }: Prop
         }
     };
 
-    if (!isOpen) return null;
+    const evaluationTypeOptions = Object.values(EvaluationType).map((t) => ({
+        label: t,
+        value: t,
+    }));
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                <h2 className="text-xl font-bold mb-4">평가 회차 생성</h2>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">제목</label>
-                        <Input {...register("title", { required: true })} placeholder="예: 2025 상반기 정기평가" />
-                        {errors.title && <span className="text-red-500 text-xs">필수 입력입니다.</span>}
-                    </div>
+        <Modal isOpen={isOpen} onClose={onClose} title="평가 회차 생성">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium mb-1">제목</label>
+                    <Input {...register("title", { required: true })} placeholder="예: 2025 상반기 정기평가" />
+                    {errors.title && <span className="text-red-500 text-xs">필수 입력입니다.</span>}
+                </div>
 
-                    <div className="flex gap-2">
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium mb-1">연도</label>
-                            <Input type="number" {...register("year", { required: true })} defaultValue={new Date().getFullYear()} />
-                        </div>
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium mb-1">유형</label>
-                            <select {...register("type")} className="w-full border rounded p-2">
-                                {Object.values(EvaluationType).map((t) => (
-                                    <option key={t} value={t}>{t}</option>
-                                ))}
-                            </select>
-                        </div>
+                <div className="flex gap-2">
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium mb-1">연도</label>
+                        <Input type="number" {...register("year", { required: true })} defaultValue={new Date().getFullYear()} />
                     </div>
+                    <div className="flex-1">
+                        <Select
+                            label="유형"
+                            options={evaluationTypeOptions}
+                            {...register("type")}
+                        />
+                    </div>
+                </div>
 
-                    <div className="flex gap-2">
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium mb-1">시작일</label>
-                            <Input type="date" {...register("startDate", { required: true })} />
-                        </div>
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium mb-1">마감일</label>
-                            <Input type="date" {...register("endDate", { required: true })} />
-                        </div>
+                <div className="flex gap-2">
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium mb-1">시작일</label>
+                        <Input type="date" {...register("startDate", { required: true })} />
                     </div>
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium mb-1">마감일</label>
+                        <Input type="date" {...register("endDate", { required: true })} />
+                    </div>
+                </div>
 
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button type="button" variant="secondary" onClick={onClose}>취소</Button>
-                        <Button type="submit" isLoading={loading}>생성</Button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="flex justify-end gap-2 mt-4">
+                    <Button type="button" variant="secondary" onClick={onClose}>취소</Button>
+                    <Button type="submit" isLoading={loading}>생성</Button>
+                </div>
+            </form>
+        </Modal>
     );
 }
+

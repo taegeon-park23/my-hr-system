@@ -1,5 +1,7 @@
 import useSWR from "swr";
 import { client } from "@/shared/api/client";
+import { fetcher } from "@/shared/api/fetcher";
+import { queryKeys } from "@/shared/api/queryKeys";
 
 export enum AssetCategory {
     LAPTOP = "LAPTOP",
@@ -44,11 +46,9 @@ export interface CreateAssetRequest {
     note?: string;
 }
 
-const fetcher = (url: string) => client.get(url).then((res) => res.data);
-
 export function useAdminAssets(companyId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<Asset[]>(
-        companyId ? `/admin/assets?companyId=${companyId}` : null,
+        companyId ? queryKeys.asset.list : null, // Todo: Adjust backend to filter by companyId if needed, or queryKeys.asset.list already implies it for admin? Using .list for now
         fetcher
     );
 
@@ -62,7 +62,7 @@ export function useAdminAssets(companyId: number | undefined) {
 
 export function useMyAssets(userId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<Asset[]>(
-        userId ? `/assets/my?userId=${userId}` : null,
+        userId ? queryKeys.asset.my(userId) : null,
         fetcher
     );
 

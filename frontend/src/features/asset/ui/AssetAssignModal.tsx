@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { assignAsset } from "../api/assetApi";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
+import { Modal } from "@/shared/ui/Modal";
 
 interface Props {
     assetId: number | null;
@@ -34,32 +35,28 @@ export function AssetAssignModal({ assetId, isOpen, onClose, onSuccess }: Props)
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-                <h2 className="text-xl font-bold mb-4">자산 할당</h2>
-                <form onSubmit={onSubmit} className="space-y-4">
-                    <p className="text-gray-600 text-sm">
-                        할당할 사용자의 ID를 입력하세요. (임시)
-                    </p>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">User ID</label>
-                        <Input
-                            value={userIdInput}
-                            onChange={(e) => setUserIdInput(e.target.value)}
-                            placeholder="Enter User ID"
-                            required
-                        />
-                    </div>
+        <Modal isOpen={isOpen} onClose={onClose} title="자산 할당" maxWidth="sm">
+            <form onSubmit={onSubmit} className="space-y-4">
+                <p className="text-gray-600 text-sm">
+                    할당할 사용자의 ID를 입력하세요. (임시)
+                </p>
+                <div>
+                    <label className="block text-sm font-medium mb-1">User ID</label>
+                    <Input
+                        value={userIdInput}
+                        onChange={(e) => setUserIdInput(e.target.value)}
+                        placeholder="Enter User ID"
+                        required
+                    />
+                </div>
 
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button type="button" variant="secondary" onClick={onClose}>취소</Button>
-                        <Button type="submit" isLoading={loading}>할당</Button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="flex justify-end gap-2 mt-4">
+                    <Button type="button" variant="secondary" onClick={onClose}>취소</Button>
+                    <Button type="submit" isLoading={loading}>할당</Button>
+                </div>
+            </form>
+        </Modal>
     );
 }
+

@@ -1,30 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { getApprovalList } from '@/features/approval/api/approvalApi';
+import { useState } from 'react';
+import { useApprovalInbox } from '@/features/approval/api/approvalApi';
 import { ApprovalList } from '@/features/approval/ui/ApprovalList';
 import { RequestForm } from '@/features/approval/ui/RequestForm';
-import { ApprovalRequest } from '@/features/approval/model/types';
 import { Button } from '@/shared/ui/Button';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export default function ApprovalPage() {
-    const [requests, setRequests] = useState<ApprovalRequest[]>([]);
-    const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const data = await getApprovalList();
-            setRequests(data);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const { user } = useAuthStore();
+    const { data: requests, isLoading, mutate } = useApprovalInbox(user?.id);
 
     return (
         <div className="space-y-6">
@@ -44,11 +30,12 @@ export default function ApprovalPage() {
             {showForm && (
                 <RequestForm onSuccess={() => {
                     setShowForm(false);
-                    fetchData();
+                    mutate();
                 }} />
             )}
 
-            <ApprovalList requests={requests} isLoading={loading} />
+            <ApprovalList requests={requests} isLoading={isLoading} />
         </div>
     );
 }
+

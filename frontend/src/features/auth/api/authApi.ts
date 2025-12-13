@@ -1,4 +1,4 @@
-import { client } from '../../../shared/api/client';
+import { client } from '@/shared/api/client';
 import { ApiResponse } from '@/shared/api/types';
 
 export interface LoginRequest {

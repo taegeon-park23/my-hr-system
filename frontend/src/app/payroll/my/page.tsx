@@ -3,9 +3,11 @@
 import { useMyPayslips } from '@/features/payroll/api';
 import { PayslipDetailView } from '@/features/payroll/ui/PayslipDetailView';
 import { useState } from 'react';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export default function MyPayslipPage() {
-    const { payslips, isLoading } = useMyPayslips();
+    const { user } = useAuthStore();
+    const { payslips, isLoading } = useMyPayslips(user?.id ?? 0);
     const [selectedPayslipId, setSelectedPayslipId] = useState<number | null>(null);
 
     if (isLoading) return <div>Loading...</div>;

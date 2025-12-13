@@ -2,33 +2,32 @@
 
 import { useEffect, useState } from 'react';
 import { getMonthlyAttendance } from '@/features/attendance/api/attendanceApi';
-import { getMyVacationBalance } from '@/features/vacation/api/vacationApi';
+import { useMyVacationBalance } from '@/features/vacation/api/vacationApi';
 import { AttendanceCalendar } from '@/features/attendance/ui/AttendanceCalendar';
 import { VacationStatus } from '@/features/vacation/ui/VacationStatus';
 import { AttendanceLog } from '@/features/attendance/model/types';
-import { VacationBalance } from '@/features/vacation/model/types';
 import { Button } from '@/shared/ui/Button';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export default function AttendancePage() {
     const [logs, setLogs] = useState<AttendanceLog[]>([]);
-    const [balance, setBalance] = useState<VacationBalance | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [logsLoading, setLogsLoading] = useState(true);
+    const { user } = useAuthStore();
+    const { balance, isLoading: balanceLoading } = useMyVacationBalance(user?.id, new Date().getFullYear());
+
+    const loading = logsLoading || balanceLoading;
 
     useEffect(() => {
-        const fetchAll = async () => {
-            setLoading(true);
+        const fetchLogs = async () => {
+            setLogsLoading(true);
             try {
-                const [logsData, balanceData] = await Promise.all([
-                    getMonthlyAttendance(2024, 12),
-                    getMyVacationBalance(),
-                ]);
+                const logsData = await getMonthlyAttendance(2024, 12);
                 setLogs(logsData);
-                setBalance(balanceData);
             } finally {
-                setLoading(false);
+                setLogsLoading(false);
             }
         };
-        fetchAll();
+        fetchLogs();
     }, []);
 
     const handleCheckIn = async () => {
@@ -85,3 +84,4 @@ export default function AttendancePage() {
         </div>
     );
 }
+
