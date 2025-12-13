@@ -250,11 +250,33 @@ CREATE TABLE vacation\_balances (
       
     updated\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP,  
       
-    UNIQUE KEY uk\_vac\_balance (user\_id, year),  
-    INDEX idx\_vac\_company (company\_id)  
+    UNIQUE KEY uk_vac_balance (user_id, year),  
+    INDEX idx_vac_company (company_id)  
 ) ENGINE=InnoDB;
 
-\-- 7\. Payrolls  
+-- 7. Vacation Requests (연차 신청 내역)
+CREATE TABLE vacation_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL, -- Tenant ID
+    user_id BIGINT NOT NULL,
+    
+    vacation_type VARCHAR(50) NOT NULL COMMENT 'ANNUAL, SICK, etc.',
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    request_days FLOAT NOT NULL,
+    reason VARCHAR(200) NULL,
+    
+    status VARCHAR(20) DEFAULT 'PENDING',
+    approval_request_id BIGINT NULL COMMENT '결재 요청 ID',
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_vac_req_company (company_id),
+    INDEX idx_vac_req_user (user_id)
+) ENGINE=InnoDB;
+
+\-- 8\. Payrolls  
 CREATE TABLE payrolls (  
     id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
     company\_id BIGINT NOT NULL, \-- Tenant ID  
@@ -273,7 +295,7 @@ CREATE TABLE payrolls (
     INDEX idx\_payroll\_company\_date (company\_id, payment\_date)  
 ) ENGINE=InnoDB;
 
-\-- 8\. Attendance (근태)  
+\-- 9\. Attendance (근태)  
 CREATE TABLE attendance\_logs (  
     id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
     company\_id BIGINT NOT NULL, \-- Tenant ID  
@@ -288,7 +310,7 @@ CREATE TABLE attendance\_logs (
     INDEX idx\_att\_user\_date (user\_id, work\_date)  
 ) ENGINE=InnoDB;
 
-\-- 9\. Assets (자산)  
+\-- 10\. Assets (자산)  
 CREATE TABLE assets (  
     id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
     company\_id BIGINT NOT NULL, \-- Tenant ID  

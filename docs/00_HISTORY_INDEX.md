@@ -88,6 +88,13 @@ This document tracks the relationship between planning documents and their execu
 **Execution Reports:**
 - `done/db_schema_correction_report.md`
 
+## Level 12: Documentation & Init Script Update
+**Plan:** `plan/init_sql_update_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/init_sql_update_report.md`
+
+
 
 
 

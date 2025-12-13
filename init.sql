@@ -81,3 +81,66 @@ CREATE TABLE IF NOT EXISTS access_grants (
     permission VARCHAR(50) NOT NULL,
     expires_at DATETIME NOT NULL
 );
+
+-- 6. Vacation Balances
+CREATE TABLE IF NOT EXISTS vacation_balances (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    year INT NOT NULL,
+    total_days FLOAT DEFAULT 0,
+    used_days FLOAT DEFAULT 0,
+    remaining_days FLOAT DEFAULT 0,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_vac_balance (user_id, year),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- 7. Payrolls
+CREATE TABLE IF NOT EXISTS payrolls (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    target_year INT NOT NULL,
+    target_month INT NOT NULL,
+    payment_date DATE NOT NULL,
+    total_amount DECIMAL(15, 0) NOT NULL,
+    status VARCHAR(20) DEFAULT 'DRAFT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_payroll_target (user_id, target_year, target_month),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- 8. Approval Requests
+CREATE TABLE IF NOT EXISTS approval_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    resource_type VARCHAR(50) NOT NULL,
+    resource_id BIGINT NOT NULL,
+    requester_user_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    current_step_order INT DEFAULT 1,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+);
+
+-- 9. Vacation Requests
+CREATE TABLE IF NOT EXISTS vacation_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    vacation_type VARCHAR(50) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    request_days FLOAT NOT NULL,
+    reason VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'PENDING',
+    approval_request_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
