@@ -1,14 +1,9 @@
-# Frontend Refactoring Tasks
+# Security & Authentication Tasks
 
-- [/] **Layout & Navigation** <!-- id: 0 -->
-    - [x] Fix Desktop Sidebar Overlap (main content margin). <!-- id: 1 -->
-    - [x] Implement Mobile Sidebar (Hamburger menu + Drawer). <!-- id: 2 -->
-    - [x] Update `Sidebar` component for mobile responsiveness. <!-- id: 3 -->
-- [ ] **Dashboard Implementation** <!-- id: 4 -->
-    - [x] Create `QuickStats` Widget. <!-- id: 5 -->
-    - [x] Create `QuickActions` Widget. <!-- id: 6 -->
-    - [x] Update `DashboardPage` to display widgets. <!-- id: 7 -->
-- [ ] **Type Safety** <!-- id: 8 -->
-    - [x] Define `ApiResponse<T>` interface. <!-- id: 9 -->
-    - [x] Refactor `vacationApi.ts` to use strict types. <!-- id: 10 -->
-    - [x] Refactor `authApi.ts` to use strict types. <!-- id: 11 -->
+- [ ] **Backend Security** <!-- id: 0 -->
+    - [x] Create `JwtAuthenticationEntryPoint` to return 401. <!-- id: 1 -->
+    - [x] Update `SecurityConfig` to use the new EntryPoint. <!-- id: 2 -->
+- [ ] **Frontend Handling** <!-- id: 3 -->
+    - [x] Update `client.ts` to handle 403 Forbidden (Logout/Redirect). <!-- id: 4 -->
+- [ ] **Verification** <!-- id: 5 -->
+    - [ ] Verify 401 response for expired tokens. <!-- id: 6 -->
