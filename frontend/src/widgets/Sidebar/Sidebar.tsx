@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
+import { NAVIGATION_ITEMS } from '@/shared/config/navigation';
+import { Icon } from '@/shared/ui/Icon';
 
 interface SidebarProps {
     isOpen?: boolean;
@@ -13,20 +15,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     const pathname = usePathname();
     const { user } = useAuthStore();
 
-    const navigation = [
-        { name: 'Dashboard', href: '/dashboard' },
-        { name: 'Organization', href: '/dashboard/org' },
-        { name: 'Approval', href: '/dashboard/approval' },
-        { name: 'Vacation', href: '/dashboard/vacation' },
-        { name: 'Payroll', href: '/dashboard/payroll' },
-        { name: 'Assets (Admin)', href: '/admin/assets/manage', requiredRole: 'ADMIN' },
-        { name: 'My Assets', href: '/assets/my' },
-        { name: 'Evaluations (Admin)', href: '/admin/evaluations/cycles', requiredRole: 'ADMIN' },
-        { name: 'Evaluations', href: '/evaluations/dashboard' },
-        { name: 'Settings', href: '/dashboard/settings' },
-    ];
-
-    const filteredNavigation = navigation.filter(item => {
+    const filteredNavigation = NAVIGATION_ITEMS.filter(item => {
         if (!item.requiredRole) return true;
         // Simple role check - adjust logic if role format differs (e.g. ROLE_ADMIN)
         return user?.role === item.requiredRole || user?.role === `ROLE_${item.requiredRole}`;
@@ -53,12 +42,17 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                         : 'text-gray-300 hover:bg-gray-700 hover:text-white'}
                   `}
                             >
+                                <Icon
+                                    name={item.icon}
+                                    className={`mr-3 flex-shrink-0 h-6 w-6 ${isActive ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'}`}
+                                />
                                 {item.name}
                             </Link>
                         );
                     })}
                 </nav>
             </div>
+
             <div className="flex-shrink-0 flex bg-gray-700 p-4">
                 <div className="flex-shrink-0 w-full group block">
                     <div className="flex items-center">
@@ -96,15 +90,14 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                 onClick={onClose}
                             >
                                 <span className="sr-only">Close sidebar</span>
-                                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <Icon name="XMarkIcon" className="h-6 w-6 text-white" />
                             </button>
                         </div>
                     )}
                     {Content}
                 </div>
                 <div className="flex-shrink-0 w-14">
+
                     {/* Force sidebar to shrink to fit close icon */}
                 </div>
             </div>

@@ -48,10 +48,11 @@ export const QuickStats = () => {
 
     return (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-            <StatCard label="Remaining Vacation" value={vacationDisplay} color="text-green-600" />
-            <StatCard label="Pending Evaluations" value={isTodosLoading ? "..." : pendingCount} color="text-yellow-600" />
-            <StatCard label="Payslip (Dec)" value="Available" color="text-blue-600" />
+            <StatCard label="Remaining Vacation" value={vacationDisplay} color="text-success-600" />
+            <StatCard label="Pending Evaluations" value={isTodosLoading ? "..." : pendingCount} color="text-warning-600" />
+            <StatCard label="Payslip (Dec)" value="Available" color="text-info-600" />
             <StatCard label="Team Members" value="-" />
         </div>
     );
+
 };

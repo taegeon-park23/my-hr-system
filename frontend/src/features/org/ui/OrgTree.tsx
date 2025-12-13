@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Department } from '../model/types';
+import { Icon } from '@/shared/ui/Icon';
 
 interface OrgTreeProps {
     nodes: Department[];
@@ -18,20 +19,17 @@ const TreeNode = ({ node }: { node: Department }) => {
                         className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
                     >
                         {isOpen ? (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <Icon name="ChevronDownIcon" className="w-4 h-4" />
                         ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
+                            <Icon name="ChevronRightIcon" className="w-4 h-4" />
                         )}
                     </button>
                 )}
                 <div className={`
           flex items-center px-3 py-1.5 rounded-md border 
-          ${node.id === 1 ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-gray-200'}
+          ${node.id === 1 ? 'bg-primary-50 border-primary-200' : 'bg-white border-gray-200'}
         `}>
+
                     <span className="text-sm font-medium text-gray-900">{node.name}</span>
                     <span className="ml-2 text-xs text-gray-400">({node.depth})</span>
                 </div>
