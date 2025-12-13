@@ -29,8 +29,6 @@ client.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
             localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-            // Dispatch unauthorized event instead of direct redirect
-            // This allows the app to handle it gracefully (e.g. show toast, redirect via router)
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new Event('auth:unauthorized'));
             }
@@ -42,7 +40,14 @@ client.interceptors.response.use(
             message: error.response?.data?.message || error.message || 'An unexpected error occurred',
         };
 
+        // Dispatch generic generic error event for global toast
+        if (typeof window !== 'undefined' && error.response?.status !== 401 && error.response?.status !== 403) {
+            const event = new CustomEvent('api:error', { detail: { message: apiError.message } });
+            window.dispatchEvent(event);
+        }
+
         return Promise.reject(apiError);
     }
 );
+
 
