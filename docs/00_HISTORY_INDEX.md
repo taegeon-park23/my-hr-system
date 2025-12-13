@@ -82,5 +82,12 @@ This document tracks the relationship between planning documents and their execu
 **Execution Reports:**
 - `done/security_improvement_report.md`
 
+## Level 11: Backend Bug Fix (DB Schema)
+**Plan:** `plan/db_schema_correction_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/db_schema_correction_report.md`
+
+
 
 
