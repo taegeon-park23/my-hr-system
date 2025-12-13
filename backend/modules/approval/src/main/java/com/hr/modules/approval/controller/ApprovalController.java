@@ -20,7 +20,7 @@ public class ApprovalController {
     public ApiResponse<List<ApprovalRequest>> getMyRequests(@PathVariable Long requesterId) {
         // In real app, requesterId comes from SecurityContext
         Long companyId = 1L; // Mock
-        return ApiResponse.success(approvalRepository.findByCompanyIdAndRequesterId(companyId, requesterId));
+        return ApiResponse.success(approvalRepository.findByCompanyIdAndRequesterUserId(companyId, requesterId));
     }
     
     @PostMapping("/request")

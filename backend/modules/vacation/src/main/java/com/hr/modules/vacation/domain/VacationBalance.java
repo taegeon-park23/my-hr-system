@@ -36,5 +36,20 @@ public class VacationBalance {
         this.totalDays = totalDays;
         this.usedDays = 0;
     }
+
+    public double getRemainingDays() {
+        return this.totalDays - this.usedDays;
+    }
+
+    public void deduct(double days) {
+        if (!canDeduct(days)) {
+            throw new IllegalStateException("Not enough vacation days."); // Custom Exception is better, but using standard for MVp
+        }
+        this.usedDays += days;
+    }
+
+    public boolean canDeduct(double days) {
+        return getRemainingDays() >= days;
+    }
 }
 

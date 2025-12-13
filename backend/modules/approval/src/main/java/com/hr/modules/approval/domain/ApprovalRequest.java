@@ -2,12 +2,14 @@ package com.hr.modules.approval.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "approval_requests")
 @Getter
+@Setter
 @NoArgsConstructor
 public class ApprovalRequest {
 
@@ -18,31 +20,33 @@ public class ApprovalRequest {
     @Column(name = "company_id", nullable = false)
     private Long companyId;
 
-    @Column(name = "requester_id", nullable = false)
-    private Long requesterId;
+    @Column(name = "resource_type", nullable = false)
+    private String resourceType;
+
+    @Column(name = "resource_id", nullable = false)
+    private Long resourceId;
+
+    @Column(name = "requester_user_id", nullable = false)
+    private Long requesterUserId;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
+    @Column(name = "current_step_order")
+    private Integer currentStepOrder = 1;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ApprovalStatus status = ApprovalStatus.PENDING;
+    private String status = "PENDING"; // Simplified for now, matching DB VARCHAR(20)
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public enum ApprovalStatus {
-        PENDING, APPROVED, REJECTED
-    }
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    public ApprovalRequest(Long companyId, Long requesterId, String title, String content) {
-        this.companyId = companyId;
-        this.requesterId = requesterId;
-        this.title = title;
-        this.content = content;
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
 
