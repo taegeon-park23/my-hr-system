@@ -1,7 +1,5 @@
-import axios from "axios";
 import useSWR from "swr";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+import { client } from "@/shared/api/client";
 
 export enum CycleStatus {
     DRAFT = "DRAFT",
@@ -48,13 +46,13 @@ export interface EvaluationRecord {
     cycleTitle?: string; // Optional for display
 }
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+const fetcher = (url: string) => client.get(url).then((res) => res.data);
 
 // --- Admin ---
 
 export function useEvaluationCycles(companyId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<EvaluationCycle[]>(
-        companyId ? `${API_URL}/api/admin/evaluations/cycles?companyId=${companyId}` : null,
+        companyId ? `/admin/evaluations/cycles?companyId=${companyId}` : null,
         fetcher
     );
 
@@ -67,17 +65,17 @@ export function useEvaluationCycles(companyId: number | undefined) {
 }
 
 export async function createEvaluationCycle(data: CreateCycleRequest) {
-    const response = await axios.post(`${API_URL}/api/admin/evaluations/cycles`, data);
+    const response = await client.post(`/admin/evaluations/cycles`, data);
     return response.data;
 }
 
 export async function startEvaluationCycle(id: number) {
-    const response = await axios.post(`${API_URL}/api/admin/evaluations/cycles/${id}/start`);
+    const response = await client.post(`/admin/evaluations/cycles/${id}/start`);
     return response.data;
 }
 
 export async function closeEvaluationCycle(id: number) {
-    const response = await axios.post(`${API_URL}/api/admin/evaluations/cycles/${id}/close`);
+    const response = await client.post(`/admin/evaluations/cycles/${id}/close`);
     return response.data;
 }
 
@@ -85,7 +83,7 @@ export async function closeEvaluationCycle(id: number) {
 
 export function useTodoEvaluations(userId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<EvaluationRecord[]>(
-        userId ? `${API_URL}/api/evaluations/todo?userId=${userId}` : null,
+        userId ? `/evaluations/todo?userId=${userId}` : null,
         fetcher
     );
 
@@ -98,6 +96,6 @@ export function useTodoEvaluations(userId: number | undefined) {
 }
 
 export async function submitEvaluation(recordId: number, data: { score: number; comment: string }) {
-    const response = await axios.post(`${API_URL}/api/evaluations/records/${recordId}/submit`, data);
+    const response = await client.post(`/evaluations/records/${recordId}/submit`, data);
     return response.data;
 }

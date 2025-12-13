@@ -1,7 +1,5 @@
-import axios from "axios";
 import useSWR from "swr";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+import { client } from "@/shared/api/client";
 
 export enum AssetCategory {
     LAPTOP = "LAPTOP",
@@ -46,11 +44,11 @@ export interface CreateAssetRequest {
     note?: string;
 }
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+const fetcher = (url: string) => client.get(url).then((res) => res.data);
 
 export function useAdminAssets(companyId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<Asset[]>(
-        companyId ? `${API_URL}/api/admin/assets?companyId=${companyId}` : null,
+        companyId ? `/admin/assets?companyId=${companyId}` : null,
         fetcher
     );
 
@@ -64,7 +62,7 @@ export function useAdminAssets(companyId: number | undefined) {
 
 export function useMyAssets(userId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<Asset[]>(
-        userId ? `${API_URL}/api/assets/my?userId=${userId}` : null,
+        userId ? `/assets/my?userId=${userId}` : null,
         fetcher
     );
 
@@ -77,24 +75,24 @@ export function useMyAssets(userId: number | undefined) {
 }
 
 export async function createAsset(data: CreateAssetRequest) {
-    const response = await axios.post(`${API_URL}/api/admin/assets`, data);
+    const response = await client.post(`/admin/assets`, data);
     return response.data;
 }
 
 export async function assignAsset(assetId: number, userId: number) {
-    const response = await axios.post(`${API_URL}/api/admin/assets/${assetId}/assign`, {
+    const response = await client.post(`/admin/assets/${assetId}/assign`, {
         userId,
     });
     return response.data;
 }
 
 export async function returnAsset(assetId: number) {
-    const response = await axios.post(`${API_URL}/api/admin/assets/${assetId}/return`);
+    const response = await client.post(`/admin/assets/${assetId}/return`);
     return response.data;
 }
 
 export async function updateAssetStatus(assetId: number, status: AssetStatus) {
-    const response = await axios.patch(`${API_URL}/api/admin/assets/${assetId}/status`, {
+    const response = await client.patch(`/admin/assets/${assetId}/status`, {
         status,
     });
     return response.data;
