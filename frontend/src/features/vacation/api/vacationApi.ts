@@ -1,6 +1,8 @@
 import { client } from '@/shared/api/client';
 import { ApiResponse } from '@/shared/api/types';
 import useSWR from 'swr';
+import { fetcher } from '@/shared/api/fetcher';
+import { queryKeys } from '@/shared/api/queryKeys';
 
 export interface VacationBalance {
     id: number;
@@ -46,17 +48,27 @@ export const vacationApi = {
     },
 };
 
-
-const fetcher = (url: string) => client.get(url).then((res) => res.data.data);
-
 export function useMyVacationBalance(userId: number | undefined, year: number) {
     const { data, error, isLoading } = useSWR<VacationBalance>(
-        userId ? `/vacations/balance?year=${year}&userId=${userId}` : null,
+        userId ? queryKeys.vacation.balance(userId, year) : null,
         fetcher
     );
 
     return {
         balance: data,
+        isLoading,
+        isError: error,
+    };
+}
+
+export function useMyVacationRequests(userId: number | undefined) {
+    const { data, error, isLoading } = useSWR<VacationRequest[]>(
+        userId ? queryKeys.vacation.requests(userId) : null,
+        fetcher
+    );
+
+    return {
+        requests: data || [],
         isLoading,
         isError: error,
     };

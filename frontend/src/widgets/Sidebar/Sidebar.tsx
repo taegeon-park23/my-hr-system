@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 interface SidebarProps {
     isOpen?: boolean;
@@ -10,6 +11,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     const pathname = usePathname();
+    const { user } = useAuthStore();
 
     const navigation = [
         { name: 'Dashboard', href: '/dashboard' },
@@ -17,12 +19,18 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { name: 'Approval', href: '/dashboard/approval' },
         { name: 'Vacation', href: '/dashboard/vacation' },
         { name: 'Payroll', href: '/dashboard/payroll' },
-        { name: 'Assets (Admin)', href: '/admin/assets/manage' },
+        { name: 'Assets (Admin)', href: '/admin/assets/manage', requiredRole: 'ADMIN' },
         { name: 'My Assets', href: '/assets/my' },
-        { name: 'Evaluations (Admin)', href: '/admin/evaluations/cycles' },
+        { name: 'Evaluations (Admin)', href: '/admin/evaluations/cycles', requiredRole: 'ADMIN' },
         { name: 'Evaluations', href: '/evaluations/dashboard' },
         { name: 'Settings', href: '/dashboard/settings' },
     ];
+
+    const filteredNavigation = navigation.filter(item => {
+        if (!item.requiredRole) return true;
+        // Simple role check - adjust logic if role format differs (e.g. ROLE_ADMIN)
+        return user?.role === item.requiredRole || user?.role === `ROLE_${item.requiredRole}`;
+    });
 
     const Content = (
         <div className="flex-1 flex flex-col min-h-0 bg-gray-800 h-full">
@@ -31,7 +39,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     <h1 className="text-white font-bold text-xl">HR System</h1>
                 </div>
                 <nav className="mt-5 flex-1 px-2 space-y-1">
-                    {navigation.map((item) => {
+                    {filteredNavigation.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                             <Link
@@ -55,8 +63,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <div className="flex-shrink-0 w-full group block">
                     <div className="flex items-center">
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-white">Admin User</p>
-                            <p className="text-xs font-medium text-gray-300">View Profile</p>
+                            <p className="text-sm font-medium text-white">{user?.name || 'Guest'}</p>
+                            <p className="text-xs font-medium text-gray-300">{user?.role || 'View Profile'}</p>
                         </div>
                     </div>
                 </div>
