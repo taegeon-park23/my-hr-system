@@ -36,11 +36,12 @@ export const queryKeys = {
         all: ['org'] as const,
         tree: '/org/tree',
         dept: (id: number) => `/org/departments/${id}`,
+        teamCount: (userId: number) => `/users/team-count?userId=${userId}`,
     },
     payroll: {
         all: ['payroll'] as const,
-        list: '/payrolls',
-        my: (userId: number) => `/payrolls/my?userId=${userId}`,
-        detail: (id: number) => `/payrolls/${id}`,
+        list: '/v1/payrolls',
+        my: '/v1/my-payslips',
+        detail: (id: number) => `/v1/payrolls/${id}`,
     },
 };

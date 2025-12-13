@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useUIStore } from '@/shared/stores/useUIStore';
 import { AuthGuard } from '@/features/auth/ui/AuthGuard';
 import { Sidebar } from '@/widgets/Sidebar/Sidebar';
 
@@ -9,12 +9,12 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { setSidebarOpen } = useUIStore();
 
     return (
         <AuthGuard>
             <div className="h-screen flex overflow-hidden bg-gray-100">
-                <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+                <Sidebar />
 
                 <div className="flex flex-col w-0 flex-1 overflow-hidden md:ml-64">
                     {/* Mobile Header */}

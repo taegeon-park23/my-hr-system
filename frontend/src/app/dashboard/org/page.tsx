@@ -37,7 +37,7 @@ export default function OrgPage() {
                         onRetry={() => mutate()}
                     />
                 ) : (
-                    <OrgTree nodes={data} />
+                    <OrgTree nodes={data || []} />
                 )}
             </div>
         </ErrorBoundary>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthListener } from "@/shared/providers/AuthListener";
+import { InterceptorInitializer } from "@/shared/api/InterceptorInitializer";
 import { ToastProvider } from "@/shared/ui/Toast";
-import { GlobalErrorListener } from "@/shared/providers/GlobalErrorListener";
 
 export const metadata: Metadata = {
     title: "HR System",
@@ -18,8 +17,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body>
                 <ToastProvider>
-                    <AuthListener />
-                    <GlobalErrorListener />
+                    <InterceptorInitializer />
                     {children}
                 </ToastProvider>
             </body>

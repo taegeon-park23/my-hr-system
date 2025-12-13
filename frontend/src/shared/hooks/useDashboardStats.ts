@@ -2,44 +2,34 @@ import { APP_CONFIG } from '@/shared/config/constants';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { useMyVacationBalance } from '@/features/vacation/api/vacationApi';
 import { useTodoEvaluations } from '@/features/evaluation/api/evaluationApi';
+import { useMyLatestPayslip } from '@/features/payroll/api/payrollApi';
+import { useMyTeamCount } from '@/features/org/api/orgApi';
 
 export const useDashboardStats = () => {
     const user = useAuthStore((state) => state.user);
 
-    // Fetch Vacation Balance
-    const { balance, isLoading: isBalanceLoading } = useMyVacationBalance(user?.id, APP_CONFIG.CURRENT_YEAR);
-
-    // Fetch Pending Todos (Evaluations for now)
+    // Fetch Data
+    const { balance, isLoading: isVacationLoading } = useMyVacationBalance(user?.id, APP_CONFIG.CURRENT_YEAR);
     const { todos, isLoading: isTodosLoading } = useTodoEvaluations(user?.id);
-
-    // Derived Logic
-    const vacationDisplay = isBalanceLoading
-        ? "Loading..."
-        : balance
-            ? `${balance.remainingDays} Days`
-            : "0 Days";
-
-    const pendingCount = isTodosLoading
-        ? "..."
-        : todos ? todos.length : 0;
+    const { payslip, isLoading: isPayslipLoading } = useMyLatestPayslip(user?.id);
+    const { count: teamCount, isLoading: isTeamLoading } = useMyTeamCount(user?.id);
 
     return {
         vacation: {
-            display: vacationDisplay,
-            isLoading: isBalanceLoading
+            balance,
+            isLoading: isVacationLoading
         },
         pendingTasks: {
-            count: pendingCount,
+            count: todos ? todos.length : 0,
             isLoading: isTodosLoading
         },
-        // Placeholders for future APIs
         payslip: {
-            status: "Available", // Hardcoded for now
-            isLoading: false
+            data: payslip,
+            isLoading: isPayslipLoading
         },
         team: {
-            count: "-", // Hardcoded for now
-            isLoading: false
+            count: teamCount || 0,
+            isLoading: isTeamLoading
         }
     };
 };

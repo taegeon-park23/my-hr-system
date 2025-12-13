@@ -6,12 +6,12 @@ import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { NAVIGATION_ITEMS } from '@/shared/config/navigation';
 import { Icon } from '@/shared/ui/Icon';
 
-interface SidebarProps {
-    isOpen?: boolean;
-    onClose?: () => void;
-}
+import { useUIStore } from '@/shared/stores/useUIStore';
 
-export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+export const Sidebar = () => {
+    const { isSidebarOpen, setSidebarOpen } = useUIStore();
+    const isOpen = isSidebarOpen;
+    const onClose = () => setSidebarOpen(false);
     const pathname = usePathname();
     const { user } = useAuthStore();
 

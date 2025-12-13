@@ -47,7 +47,7 @@ export function useMyPayslips(userId: number) {
     // Let's use string for now to match confirmed existing endpoint or update queryKeys to match reality?
     // queryKeys defined: my: (userId) => `/payrolls/my?userId=${userId}`
     // Let's assume standardisation towards queryKeys pattern is desired.
-    const { data, error, isLoading } = useSWR<Payslip[]>(userId ? queryKeys.payroll.my(userId) : null, fetcher);
+    const { data, error, isLoading } = useSWR<Payslip[]>(userId ? queryKeys.payroll.my : null, fetcher);
     return {
         payslips: data,
         isLoading,
