@@ -37,9 +37,12 @@
   - `POST /api/vacations/request`
 
 ## 3. 검증 (Verification)
-- **코드 리뷰:** 패키지 구조(`com.hr.modules.vacation`), 엔티티 매핑, 서비스 로직의 정상 구현 확인.
-- **빌드:** 로컬 환경(`JAVA_HOME` 미설정) 제약으로 인해 CI/Docker 환경에서의 빌드 및 테스트 필요.
-- **호환성:** `ApprovalRequest` 리팩토링 사항이 기존 결재 로직(MVP 수준)과 호환됨을 확인.
+- **Docker Build:** `docker-compose` 환경에서 백엔드 전체 모듈 컴파일 성공 (`BUILD SUCCESSFUL`).
+  - `modules:policy`: `spring-boot-starter-security` 의존성 누락 수정 완료.
+  - `modules:user`, `modules:org`: `PolicyService`에서 참조하는 `*ModuleApi` 인터페이스 구현체 추가 및 `UserService` import 문제 해결.
+- **코드 호환성:** 
+  - `ApprovalRequest` 리팩토링 후 빌드 정상 확인.
+  - `VacationService`와 `ApprovalModuleApi` 간 연동 코드 컴파일 확인.
 
 ## 4. 결론 (Conclusion)
 휴가 신청 프로세스의 백엔드 구현이 완료되었습니다. Frontend 연동 시 API 명세(`VacationController`)를 참조하여 구현하면 됩니다.
