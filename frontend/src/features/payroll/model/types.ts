@@ -1,12 +1,33 @@
-export interface PayrollStub {
+export interface Payroll {
     id: number;
-    userId: number;
-    targetYear: number;
-    targetMonth: number;
+    title: string;
+    targetMonth: string;
     paymentDate: string;
-    totalAmount: number;
     status: 'DRAFT' | 'CONFIRMED' | 'PAID';
-    taxAmount: number;
-    insuranceAmount: number;
+    totalAmount: number;
+}
+
+export interface PayslipItem {
+    itemType: 'ALLOWANCE' | 'DEDUCTION';
+    itemName: string;
+    amount: number;
+}
+
+export interface Payslip {
+    id: number;
+    userName: string;
+    departmentName: string;
+    baseSalary: number;
+    totalAllowance: number;
+    totalDeduction: number;
     netAmount: number;
+    items: PayslipItem[];
+    payrollTitle?: string;
+    targetMonth?: string;
+}
+
+export interface PayrollCreateRequest {
+    title: string;
+    targetMonth: string;
+    paymentDate: string;
 }

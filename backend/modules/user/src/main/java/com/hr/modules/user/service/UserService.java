@@ -30,4 +30,19 @@ public class UserService implements UserModuleApi {
                 .role(user.getRole().toString()) // Assuming Role is Enum or String
                 .build();
     }
+
+    @Override
+    public java.util.List<UserInfoDto> getUsersByCompanyId(String companyId) {
+        Long compId = Long.parseLong(companyId); // Type conversion
+        return userRepository.findByCompanyId(compId).stream()
+                .map(user -> UserInfoDto.builder()
+                        .userId(user.getId())
+                        .companyId(user.getCompanyId())
+                        .deptId(user.getDeptId())
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .role(user.getRole())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

@@ -64,6 +64,14 @@ This document tracks the relationship between planning documents and their execu
 **Execution Reports:**
 - `done/backend_vacation_implementation_report.md`
 
+## Level 13: Backend Payroll Implementation
+**Plan:** `plan/backend_payroll_implementation_plan.md`
+**Plan(FE):** `plan/frontend_payroll_implementation_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/backend_payroll_implementation_report.md`
+- `done/frontend_payroll_implementation_report.md`
+
 ## Level 8: Frontend Vacation Integration
 **Plan:** `plan/frontend_vacation_integration_plan.md`
 **Status:** ✅ Completed
