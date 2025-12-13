@@ -102,13 +102,26 @@ This document tracks the relationship between planning documents and their execu
 **Execution Reports:**
 - `done/init_sql_update_report.md`
 
-
-
-
-
-
 ## Level 14: Database Schema Synchronization
 **Plan:** `plan/maintenance_db_schema_sync_plan.md`
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/maintenance_db_schema_sync_report.md`
+
+## Level 15: Roadmap & Maintenance Analysis
+**Plan:** `plan/maintenance_roadmap_update_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/maintenance_roadmap_update_report.md`
+
+## Level 16: Frontend Storybook Implementation
+**Plan:** `plan/frontend_storybook_plan.md` (Pending)
+**Status:** ⬜ Pending
+
+## Level 17: Evaluations Module Implementation
+**Plan:** `plan/backend_evaluations_plan.md` (Pending)
+**Status:** ⬜ Pending
+
+## Level 18: Assets Module Implementation
+**Plan:** `plan/backend_assets_plan.md` (Pending)
+**Status:** ⬜ Pending
