@@ -1,14 +1,7 @@
 import useSWR from 'swr';
 import { fetcher } from '@/shared/api/fetcher';
 import { queryKeys } from '@/shared/api/queryKeys';
-
-export interface PayslipSummary {
-    id: number;
-    year: number;
-    month: number;
-    totalAmount: number;
-    paymentDate: string;
-}
+import { PayslipSummary } from '../model/types';
 
 export function useMyLatestPayslip(userId: number | undefined) {
     const { data, error, isLoading } = useSWR<PayslipSummary[]>(

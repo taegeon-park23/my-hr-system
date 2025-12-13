@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CreateCycleRequest, EvaluationType, createEvaluationCycle } from "../api/evaluationApi";
+import { createEvaluationCycle } from "../api/evaluationApi";
+import { CreateCycleRequest, EvaluationType } from "../model/types";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Modal } from "@/shared/ui/Modal";

@@ -21,3 +21,7 @@ export interface OrgNode {
     department: Department;
     members: User[];
 }
+
+export interface TeamCountResponse {
+    count: number;
+}

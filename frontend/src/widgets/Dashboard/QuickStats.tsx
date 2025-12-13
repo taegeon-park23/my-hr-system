@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDashboardStats } from '@/shared/hooks/useDashboardStats';
+import { useDashboardStats } from './model/useDashboardStats';
 import { StatCard } from '@/shared/ui/StatCard';
 
 export const QuickStats = () => {

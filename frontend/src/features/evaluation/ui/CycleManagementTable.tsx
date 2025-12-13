@@ -1,5 +1,6 @@
 import React from "react";
-import { EvaluationCycle, CycleStatus, useEvaluationCycles, startEvaluationCycle, closeEvaluationCycle } from "../api/evaluationApi";
+import { useEvaluationCycles, startEvaluationCycle, closeEvaluationCycle } from "../api/evaluationApi";
+import { EvaluationCycle, CycleStatus } from "../model/types";
 import { Button } from "@/shared/ui/Button";
 
 interface Props {

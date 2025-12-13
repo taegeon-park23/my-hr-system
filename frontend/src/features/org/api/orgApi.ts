@@ -1,11 +1,7 @@
 import useSWR from 'swr';
 import { fetcher } from '@/shared/api/fetcher';
 import { queryKeys } from '@/shared/api/queryKeys';
-import { Department } from '../model/types';
-
-interface TeamCountResponse {
-    count: number;
-}
+import { Department, TeamCountResponse } from '../model/types';
 
 export function useMyTeamCount(userId: number | undefined) {
     const { data, error, isLoading } = useSWR<TeamCountResponse>(

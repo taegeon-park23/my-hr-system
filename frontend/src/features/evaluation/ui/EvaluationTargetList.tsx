@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { EvaluationRecord, useTodoEvaluations } from "../api/evaluationApi";
+import { useTodoEvaluations } from "../api/evaluationApi";
+import { EvaluationRecord } from "../model/types";
 import { Button } from "@/shared/ui/Button";
 
 interface Props {

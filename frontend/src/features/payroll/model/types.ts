@@ -1,10 +1,24 @@
+export interface PayslipSummary {
+    id: number;
+    year: number;
+    month: number;
+    totalAmount: number;
+    paymentDate: string;
+}
+
 export interface Payroll {
     id: number;
     title: string;
     targetMonth: string;
     paymentDate: string;
-    status: 'DRAFT' | 'CONFIRMED' | 'PAID';
     totalAmount: number;
+    status: 'DRAFT' | 'CONFIRMED' | 'PAID'; // Inferred common status
+}
+
+export interface PayrollCreateRequest {
+    title: string;
+    targetMonth: string;
+    paymentDate: string;
 }
 
 export interface PayslipItem {
@@ -15,6 +29,10 @@ export interface PayslipItem {
 
 export interface Payslip {
     id: number;
+    payrollId: number;
+    userId: number;
+    payrollTitle: string;
+    targetMonth: string;
     userName: string;
     departmentName: string;
     baseSalary: number;
@@ -22,12 +40,4 @@ export interface Payslip {
     totalDeduction: number;
     netAmount: number;
     items: PayslipItem[];
-    payrollTitle?: string;
-    targetMonth?: string;
-}
-
-export interface PayrollCreateRequest {
-    title: string;
-    targetMonth: string;
-    paymentDate: string;
 }

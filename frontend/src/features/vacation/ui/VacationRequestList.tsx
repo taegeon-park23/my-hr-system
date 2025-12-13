@@ -1,5 +1,5 @@
 import React from 'react';
-import { VacationRequest } from '../api/vacationApi';
+import { VacationRequest } from '../model/types';
 
 interface Props {
     requests: VacationRequest[];

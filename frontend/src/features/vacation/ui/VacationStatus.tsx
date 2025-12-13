@@ -1,5 +1,5 @@
 import React from 'react';
-import { VacationBalance } from '../api/vacationApi';
+import { VacationBalance } from '../model/types';
 
 interface Props {
     balance: VacationBalance;

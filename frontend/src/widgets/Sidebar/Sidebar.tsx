@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { NAVIGATION_ITEMS } from '@/shared/config/navigation';
 import { Icon } from '@/shared/ui/Icon';
+import { hasPermission } from '@/shared/lib/role-guard';
 
 import { useUIStore } from '@/shared/stores/useUIStore';
 
@@ -16,9 +17,7 @@ export const Sidebar = () => {
     const { user } = useAuthStore();
 
     const filteredNavigation = NAVIGATION_ITEMS.filter(item => {
-        if (!item.requiredRole) return true;
-        // Simple role check - adjust logic if role format differs (e.g. ROLE_ADMIN)
-        return user?.role === item.requiredRole || user?.role === `ROLE_${item.requiredRole}`;
+        return hasPermission(user, item.requiredRole);
     });
 
     const Content = (
