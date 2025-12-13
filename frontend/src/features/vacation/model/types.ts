@@ -1,7 +1,4 @@
-export interface VacationBalance {
-    userId: number;
-    year: number;
-    totalDays: number;
-    usedDays: number;
-    remainingDays: number;
-}
+import { VacationBalance as Balance, VacationRequest as Request } from '../api/vacationApi';
+
+export type VacationBalance = Balance;
+export type VacationRequest = Request;
