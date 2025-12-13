@@ -122,9 +122,11 @@ This document tracks the relationship between planning documents and their execu
 
 ## Level 17: Evaluations Module Implementation
 **Plan:** `plan/backend_evaluations_plan.md`
+**Plan(FE):** `plan/frontend_evaluations_implementation_plan.md`
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/backend_evaluations_report.md`
+- `done/frontend_evaluations_report.md`
 
 ## Level 18: Assets Module Implementation
 **Plan:** `plan/backend_assets_plan.md`

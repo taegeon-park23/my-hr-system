@@ -19,6 +19,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { name: 'Payroll', href: '/dashboard/payroll' },
         { name: 'Assets (Admin)', href: '/admin/assets/manage' },
         { name: 'My Assets', href: '/assets/my' },
+        { name: 'Evaluations (Admin)', href: '/admin/evaluations/cycles' },
+        { name: 'Evaluations', href: '/evaluations/dashboard' },
         { name: 'Settings', href: '/dashboard/settings' },
     ];
 
