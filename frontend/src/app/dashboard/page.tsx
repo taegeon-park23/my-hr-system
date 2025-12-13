@@ -1,3 +1,5 @@
+"use client";
+
 import { QuickStats } from '@/widgets/Dashboard/QuickStats';
 import { QuickActions } from '@/widgets/Dashboard/QuickActions';
 
