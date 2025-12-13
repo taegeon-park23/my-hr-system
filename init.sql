@@ -186,3 +186,47 @@ CREATE TABLE IF NOT EXISTS payslip_items (
     amount DECIMAL(19, 2) NOT NULL,
     CONSTRAINT fk_payslip_items_payslip FOREIGN KEY (payslip_id) REFERENCES payslips(id)
 );
+
+-- 13. Evaluation Cycles [NEW]
+CREATE TABLE IF NOT EXISTS evaluation_cycles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    title VARCHAR(100) NOT NULL COMMENT '예: 2025년 상반기 정기 평가',
+    year INT NOT NULL,
+    type ENUM('PERFORMANCE', 'COMPETENCY', 'KPI') NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    status ENUM('DRAFT', 'OPEN', 'CLOSED', 'ARCHIVED') DEFAULT 'DRAFT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+);
+
+-- 14. Evaluations [NEW]
+CREATE TABLE IF NOT EXISTS evaluations (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cycle_id BIGINT NOT NULL,
+    target_user_id BIGINT NOT NULL COMMENT '피평가자',
+    total_score DECIMAL(5,2) DEFAULT 0,
+    final_grade VARCHAR(10) DEFAULT NULL COMMENT 'S, A, B, C, D',
+    status ENUM('READY', 'SELF_EVAL', 'PEER_EVAL', 'MANAGER_EVAL', 'COMPLETED') DEFAULT 'READY',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_eval_target (cycle_id, target_user_id),
+    FOREIGN KEY (cycle_id) REFERENCES evaluation_cycles(id),
+    FOREIGN KEY (target_user_id) REFERENCES users(id)
+);
+
+-- 15. Evaluation Records [NEW]
+CREATE TABLE IF NOT EXISTS evaluation_records (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    evaluation_id BIGINT NOT NULL,
+    rater_user_id BIGINT NOT NULL COMMENT '평가자 (본인 포함)',
+    rater_type ENUM('SELF', 'PEER', 'MANAGER') NOT NULL,
+    score DECIMAL(5,2) DEFAULT 0,
+    comment TEXT NULL,
+    submitted_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evaluation_id) REFERENCES evaluations(id),
+    FOREIGN KEY (rater_user_id) REFERENCES users(id)
+);

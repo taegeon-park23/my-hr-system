@@ -121,8 +121,10 @@ This document tracks the relationship between planning documents and their execu
 - `done/frontend_storybook_report.md`
 
 ## Level 17: Evaluations Module Implementation
-**Plan:** `plan/backend_evaluations_plan.md` (Pending)
-**Status:** ⬜ Pending
+**Plan:** `plan/backend_evaluations_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/backend_evaluations_report.md`
 
 ## Level 18: Assets Module Implementation
 **Plan:** `plan/backend_assets_plan.md` (Pending)

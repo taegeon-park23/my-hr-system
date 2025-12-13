@@ -322,9 +322,55 @@ CREATE TABLE attendance_logs (
     FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
+### **3.5 인사평가 모듈 (Evaluations) - [NEW]**
+
+-- 13. Evaluation Cycles
+CREATE TABLE evaluation_cycles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    title VARCHAR(100) NOT NULL COMMENT '예: 2025년 상반기 정기 평가',
+    year INT NOT NULL,
+    type ENUM('PERFORMANCE', 'COMPETENCY', 'KPI') NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    status ENUM('DRAFT', 'OPEN', 'CLOSED', 'ARCHIVED') DEFAULT 'DRAFT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+) ENGINE=InnoDB;
+
+-- 14. Evaluations
+CREATE TABLE evaluations (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cycle_id BIGINT NOT NULL,
+    target_user_id BIGINT NOT NULL COMMENT '피평가자',
+    total_score DECIMAL(5,2) DEFAULT 0,
+    final_grade VARCHAR(10) DEFAULT NULL COMMENT 'S, A, B, C, D',
+    status ENUM('READY', 'SELF_EVAL', 'PEER_EVAL', 'MANAGER_EVAL', 'COMPLETED') DEFAULT 'READY',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_eval_target (cycle_id, target_user_id),
+    FOREIGN KEY (cycle_id) REFERENCES evaluation_cycles(id),
+    FOREIGN KEY (target_user_id) REFERENCES users(id)
+) ENGINE=InnoDB;
+
+-- 15. Evaluation Records
+CREATE TABLE evaluation_records (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    evaluation_id BIGINT NOT NULL,
+    rater_user_id BIGINT NOT NULL COMMENT '평가자 (본인 포함)',
+    rater_type ENUM('SELF', 'PEER', 'MANAGER') NOT NULL,
+    score DECIMAL(5,2) DEFAULT 0,
+    comment TEXT NULL,
+    submitted_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evaluation_id) REFERENCES evaluations(id),
+    FOREIGN KEY (rater_user_id) REFERENCES users(id)
+) ENGINE=InnoDB;
+
 ### **4. Future Implementations (Planned)**
 *Below tables are in design but not yet implemented in Running DB.*
 
 -- Assets (자산)
--- Evaluations (평가)
+-- Assets (자산)
 
