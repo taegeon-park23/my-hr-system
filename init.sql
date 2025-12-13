@@ -7,7 +7,14 @@ USE hr_system;
 CREATE TABLE IF NOT EXISTS companies (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    domain VARCHAR(255) NOT NULL UNIQUE
+    domain VARCHAR(255) NOT NULL UNIQUE,
+    business_number VARCHAR(255) DEFAULT NULL,
+    created_at DATETIME(6) DEFAULT NULL,
+    expired_at DATE DEFAULT NULL,
+    plan_type VARCHAR(20) DEFAULT NULL,
+    status ENUM('ACTIVE','INACTIVE','SUSPENDED') DEFAULT NULL,
+    updated_at DATETIME(6) DEFAULT NULL,
+    is_active BIT(1) DEFAULT NULL
 );
 
 INSERT INTO companies (id, name, domain) VALUES (1, 'System Admin', 'hr-system.com') ON DUPLICATE KEY UPDATE name=name;
@@ -54,10 +61,13 @@ CREATE TABLE IF NOT EXISTS departments (
     name VARCHAR(255) NOT NULL,
     parent_id BIGINT,
     path_string VARCHAR(1000),
+    depth INT DEFAULT 0,
+    path VARCHAR(255),
     FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
-INSERT INTO departments (company_id, name, path_string) VALUES (2, 'Mobile Division', 'Mobile Division');
+INSERT INTO departments (company_id, name, path_string, depth) VALUES (2, 'Mobile Division', 'Mobile Division', 0);
+
 
 -- 4. Attendance
 CREATE TABLE IF NOT EXISTS attendance_logs (
@@ -99,16 +109,17 @@ CREATE TABLE IF NOT EXISTS vacation_balances (
 -- 7. Payrolls
 CREATE TABLE IF NOT EXISTS payrolls (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    company_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
+    company_id VARCHAR(50) NOT NULL,
+    tenant_id VARCHAR(50) NOT NULL,
+    title VARCHAR(100) NOT NULL,
     target_year INT NOT NULL,
-    target_month INT NOT NULL,
+    target_month VARCHAR(7) NOT NULL,
     payment_date DATE NOT NULL,
-    total_amount DECIMAL(15, 0) NOT NULL,
-    status VARCHAR(20) DEFAULT 'DRAFT',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uk_payroll_target (user_id, target_year, target_month),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    total_amount DECIMAL(19, 2) NOT NULL,
+    status ENUM('DRAFT', 'CONFIRMED', 'PAID') NOT NULL,
+    created_at DATETIME(6),
+    updated_at DATETIME(6),
+    INDEX idx_payroll_tenant (tenant_id, company_id, target_month)
 );
 
 -- 8. Approval Requests
@@ -131,16 +142,47 @@ CREATE TABLE IF NOT EXISTS vacation_requests (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     company_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    vacation_type VARCHAR(50) NOT NULL,
+    vacation_type ENUM('ANNUAL','HALF_AM','HALF_PM','SICK','UNPAID') NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    request_days FLOAT NOT NULL,
+    request_days DOUBLE NOT NULL,
     reason VARCHAR(255),
-    status VARCHAR(20) DEFAULT 'PENDING',
+    status VARCHAR(255),
     approval_request_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at DATETIME(6),
     FOREIGN KEY (company_id) REFERENCES companies(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- 10. Approval Steps [NEW]
+CREATE TABLE IF NOT EXISTS approval_steps (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    request_id BIGINT NOT NULL,
+    step_order INT NOT NULL,
+    approver_id BIGINT NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL,
+    CONSTRAINT fk_approval_steps_request FOREIGN KEY (request_id) REFERENCES approval_requests(id)
+);
+
+-- 11. Payslips [NEW]
+CREATE TABLE IF NOT EXISTS payslips (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payroll_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    user_name VARCHAR(100) NOT NULL,
+    total_allowance DECIMAL(19, 2) NOT NULL,
+    total_deduction DECIMAL(19, 2) NOT NULL,
+    net_pay DECIMAL(19, 2) NOT NULL,
+    CONSTRAINT fk_payslips_payroll FOREIGN KEY (payroll_id) REFERENCES payrolls(id)
+);
+
+-- 12. Payslip Items [NEW]
+CREATE TABLE IF NOT EXISTS payslip_items (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payslip_id BIGINT NOT NULL,
+    item_type ENUM('ALLOWANCE', 'DEDUCTION') NOT NULL,
+    item_name VARCHAR(50) NOT NULL,
+    amount DECIMAL(19, 2) NOT NULL,
+    CONSTRAINT fk_payslip_items_payslip FOREIGN KEY (payslip_id) REFERENCES payslips(id)
+);

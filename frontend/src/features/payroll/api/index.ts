@@ -1,13 +1,13 @@
 import useSWR from 'swr';
-import axios from 'axios';
+import { client } from '@/shared/api/client';
 import { Payroll, PayrollCreateRequest, Payslip } from '../model/types';
 
-// Fetcher function
-const fetcher = (url: string) => axios.get(url).then(res => res.data.data);
+// Fetcher function using shared client (with auth token)
+const fetcher = (url: string) => client.get(url).then(res => res.data.data);
 
 // 1. Get Payroll List
 export function usePayrollList() {
-    const { data, error, isLoading, mutate } = useSWR<Payroll[]>('/payrolls', fetcher);
+    const { data, error, isLoading, mutate } = useSWR<Payroll[]>('/v1/payrolls', fetcher);
     return {
         payrolls: data,
         isLoading,
@@ -18,7 +18,7 @@ export function usePayrollList() {
 
 // 2. Get Payroll Detail
 export function usePayrollDetail(id: string) {
-    const { data, error, isLoading } = useSWR<Payroll>(id ? `/payrolls/${id}` : null, fetcher);
+    const { data, error, isLoading } = useSWR<Payroll>(id ? `/v1/payrolls/${id}` : null, fetcher);
     return {
         payroll: data,
         isLoading,
@@ -28,7 +28,7 @@ export function usePayrollDetail(id: string) {
 
 // 3. Get Payslips in Payroll
 export function usePayslips(payrollId: string) {
-    const { data, error, isLoading } = useSWR<Payslip[]>(payrollId ? `/payrolls/${payrollId}/payslips` : null, fetcher);
+    const { data, error, isLoading } = useSWR<Payslip[]>(payrollId ? `/v1/payrolls/${payrollId}/payslips` : null, fetcher);
     return {
         payslips: data,
         isLoading,
@@ -38,7 +38,7 @@ export function usePayslips(payrollId: string) {
 
 // 4. Get My Payslips
 export function useMyPayslips() {
-    const { data, error, isLoading } = useSWR<Payslip[]>('/my-payslips', fetcher);
+    const { data, error, isLoading } = useSWR<Payslip[]>('/v1/my-payslips', fetcher);
     return {
         payslips: data,
         isLoading,
@@ -48,6 +48,6 @@ export function useMyPayslips() {
 
 // 5. Create Payroll Mutation
 export async function createPayroll(data: PayrollCreateRequest) {
-    const response = await axios.post('/payrolls', data);
+    const response = await client.post('/v1/payrolls', data);
     return response.data;
 }

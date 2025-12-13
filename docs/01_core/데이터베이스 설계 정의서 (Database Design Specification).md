@@ -120,206 +120,211 @@ Charset: utf8mb4
 
 ### **3.0 시스템 및 테넌트 모듈 (System Core) \- \[NEW\]**
 
-\-- 1\. Companies (테넌트 마스터)  
-CREATE TABLE companies (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    name VARCHAR(100) NOT NULL COMMENT '회사명',  
-    domain VARCHAR(100) NULL COMMENT '전용 도메인 (hr.samsung.com)',  
-    business\_number VARCHAR(20) NULL COMMENT '사업자등록번호',  
-      
-    status VARCHAR(20) DEFAULT 'ACTIVE' COMMENT 'ACTIVE, INACTIVE, SUSPENDED',  
-    plan\_type VARCHAR(20) DEFAULT 'BASIC' COMMENT 'BASIC, PRO, ENTERPRISE',  
-    expired\_at DATE NULL COMMENT '서비스 만료일',  
-      
-    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP,  
-    updated\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP,  
-      
-    UNIQUE KEY uk\_company\_domain (domain)  
+-- 1. Companies (테넌트 마스터)
+CREATE TABLE companies (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL COMMENT '회사명',
+    domain VARCHAR(255) NOT NULL COMMENT '전용 도메인 (hr.samsung.com)',
+    business_number VARCHAR(255) DEFAULT NULL COMMENT '사업자등록번호',
+    
+    status ENUM('ACTIVE','INACTIVE','SUSPENDED') DEFAULT NULL,
+    plan_type VARCHAR(20) DEFAULT NULL COMMENT 'BASIC, PRO, ENTERPRISE',
+    expired_at DATE NULL COMMENT '서비스 만료일',
+    is_active BIT(1) DEFAULT NULL,
+    
+    created_at DATETIME(6) DEFAULT NULL,
+    updated_at DATETIME(6) DEFAULT NULL,
+    
+    UNIQUE KEY uk_company_domain (domain)
 ) ENGINE=InnoDB COMMENT='고객사(테넌트) 정보';
 
 ### **3.1 공통 모듈 (User & Organization)**
 
-\-- 2\. Users (사용자)  
-CREATE TABLE users (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL COMMENT 'Tenant ID (0=System Admin)',  
-    dept\_id BIGINT NULL,  
-      
-    email VARCHAR(100) NOT NULL,  
-    password\_hash VARCHAR(255) NOT NULL,  
-    name VARCHAR(50) NOT NULL,  
-      
-    employee\_number VARCHAR(20) NOT NULL,  
-    \-- SUPER\_ADMIN: 전체 관리자 (company\_id=0)  
-    \-- TENANT\_ADMIN: 해당 테넌트 관리자  
-    \-- DEPT\_MANAGER: 부서장  
-    \-- USER: 일반 사용자  
-    role VARCHAR(20) NOT NULL DEFAULT 'USER',  
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',  
-      
-    hire\_date DATE NOT NULL,  
-    resign\_date DATE NULL,  
-      
-    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP,  
-    updated\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP,  
-      
-    UNIQUE KEY uk\_user\_email (email),  
-    UNIQUE KEY uk\_user\_emp\_no (company\_id, employee\_number), \-- 테넌트별 사번 중복 방지  
-      
-    INDEX idx\_user\_company (company\_id),  
-    INDEX idx\_user\_dept (dept\_id)  
+-- 2. Users (사용자)
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL COMMENT 'Tenant ID (0=System Admin)',
+    dept_id BIGINT NULL,
+    
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    
+    -- employee_number removed in current impl or simplified
+    role VARCHAR(50) NOT NULL COMMENT 'SUPER_ADMIN, TENANT_ADMIN, USER etc',
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY uk_user_email (email),
+    FOREIGN KEY (company_id) REFERENCES companies(id)
 ) ENGINE=InnoDB COMMENT='사용자 정보';
 
-\-- 3\. Departments (조직)  
-CREATE TABLE departments (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL COMMENT 'Tenant ID',  
-    parent\_id BIGINT NULL,  
-    leader\_user\_id BIGINT NULL,  
-      
-    name VARCHAR(100) NOT NULL,  
-    path\_string VARCHAR(500) NULL,  
-    depth INT DEFAULT 0,  
-      
-    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP,  
-    updated\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP,  
-      
-    INDEX idx\_dept\_company (company\_id),  
-    INDEX idx\_dept\_parent (parent\_id)  
+-- 3. Departments (조직)
+CREATE TABLE departments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL COMMENT 'Tenant ID',
+    parent_id BIGINT NULL,
+    
+    name VARCHAR(255) NOT NULL,
+    path_string VARCHAR(1000) NULL,
+    depth INT DEFAULT 0,
+    path VARCHAR(255) NULL,
+    
+    FOREIGN KEY (company_id) REFERENCES companies(id)
 ) ENGINE=InnoDB COMMENT='부서 정보';
 
 ### **3.2 결재 모듈 (Approval Engine)**
 
-\-- 4\. Approval Requests  
-CREATE TABLE approval\_requests (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL COMMENT 'Tenant ID',  
-      
-    resource\_type VARCHAR(50) NOT NULL,  
-    resource\_id BIGINT NOT NULL,  
-    requester\_user\_id BIGINT NOT NULL,  
-      
-    title VARCHAR(200) NOT NULL,  
-    current\_step\_order INT DEFAULT 1,  
-    status VARCHAR(20) DEFAULT 'PENDING',  
-      
-    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP,  
-    updated\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP,  
-      
-    INDEX idx\_app\_company\_resource (company\_id, resource\_type),  
-    INDEX idx\_app\_requester (requester\_user\_id)  
+-- 4. Approval Requests
+CREATE TABLE approval_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL COMMENT 'Tenant ID',
+    
+    resource_type VARCHAR(50) NOT NULL,
+    resource_id BIGINT NOT NULL,
+    requester_user_id BIGINT NOT NULL,
+    
+    title VARCHAR(255) NOT NULL,
+    current_step_order INT DEFAULT 1,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (company_id) REFERENCES companies(id)
 ) ENGINE=InnoDB;
 
-\-- (Steps, Assignees 테이블은 상위 Request ID를 참조하므로 company\_id 중복 생략 가능하나,   
-\--  조회 편의성을 위해 역정규화하여 포함할 수도 있음. 여기서는 정규화 유지)  
-CREATE TABLE approval\_steps ( ... );  
-CREATE TABLE approval\_assignees ( ... );
+-- 10. Approval Steps
+CREATE TABLE approval_steps (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    request_id BIGINT NOT NULL,
+    step_order INT NOT NULL,
+    approver_id BIGINT NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL,
+    
+    CONSTRAINT fk_approval_steps_request FOREIGN KEY (request_id) REFERENCES approval_requests(id)
+) ENGINE=InnoDB;
 
 ### **3.3 정책 모듈 (Policy & Security)**
 
-\-- 5\. Access Grants (동적 권한)  
-CREATE TABLE access\_grants (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    \-- 권한 부여는 특정 유저에게 귀속되므로 user\_id를 통해 company 식별 가능  
-    grantee\_user\_id BIGINT NOT NULL,   
-      
-    resource\_type VARCHAR(50) NOT NULL,  
-    resource\_id BIGINT NOT NULL,  
-    permission\_type VARCHAR(50) NOT NULL,  
-      
-    expiration\_time TIMESTAMP NOT NULL,  
-    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP,  
-      
-    INDEX idx\_grant\_check (grantee\_user\_id, resource\_type, expiration\_time)  
+-- 5. Access Grants (동적 권한)
+CREATE TABLE access_grants (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    grantee_user_id BIGINT NOT NULL,
+    
+    resource_type VARCHAR(50) NOT NULL,
+    resource_id BIGINT NOT NULL,
+    permission VARCHAR(50) NOT NULL,
+    
+    expires_at DATETIME NOT NULL
 ) ENGINE=InnoDB;
 
 ### **3.4 도메인 모듈 (HR Functions)**
 
-모든 도메인 테이블에 company\_id를 추가하여 **Tenant Isolation**을 물리적으로 지원합니다.
-
-\-- 6\. Vacation Balances  
-CREATE TABLE vacation\_balances (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL, \-- Tenant ID  
-    user\_id BIGINT NOT NULL,  
-    year INT NOT NULL,  
-      
-    total\_days FLOAT DEFAULT 0,  
-    used\_days FLOAT DEFAULT 0,  
-    remaining\_days FLOAT DEFAULT 0,  
-      
-    updated\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP,  
-      
-    UNIQUE KEY uk_vac_balance (user_id, year),  
-    INDEX idx_vac_company (company_id)  
+-- 6. Vacation Balances
+CREATE TABLE vacation_balances (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL, 
+    user_id BIGINT NOT NULL,
+    year INT NOT NULL,
+    
+    total_days FLOAT DEFAULT 0,
+    used_days FLOAT DEFAULT 0,
+    remaining_days FLOAT DEFAULT 0,
+    
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY uk_vac_balance (user_id, year),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 -- 7. Vacation Requests (연차 신청 내역)
 CREATE TABLE vacation_requests (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    company_id BIGINT NOT NULL, -- Tenant ID
+    company_id BIGINT NOT NULL, 
     user_id BIGINT NOT NULL,
     
-    vacation_type VARCHAR(50) NOT NULL COMMENT 'ANNUAL, SICK, etc.',
+    vacation_type ENUM('ANNUAL','HALF_AM','HALF_PM','SICK','UNPAID') NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    request_days FLOAT NOT NULL,
-    reason VARCHAR(200) NULL,
+    request_days DOUBLE NOT NULL,
+    reason VARCHAR(255) NULL,
     
-    status VARCHAR(20) DEFAULT 'PENDING',
-    approval_request_id BIGINT NULL COMMENT '결재 요청 ID',
+    status VARCHAR(255) DEFAULT NULL,
+    approval_request_id BIGINT NULL,
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at DATETIME(6),
     
-    INDEX idx_vac_req_company (company_id),
-    INDEX idx_vac_req_user (user_id)
+    FOREIGN KEY (company_id) REFERENCES companies(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
-\-- 8\. Payrolls  
-CREATE TABLE payrolls (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL, \-- Tenant ID  
-    user\_id BIGINT NOT NULL,  
-      
-    target\_year INT NOT NULL,  
-    target\_month INT NOT NULL,  
-    payment\_date DATE NOT NULL,  
-      
-    total\_amount DECIMAL(15, 0\) NOT NULL,  
-    status VARCHAR(20) DEFAULT 'DRAFT',  
-      
-    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP,  
-      
-    UNIQUE KEY uk\_payroll\_target (user\_id, target\_year, target\_month),  
-    INDEX idx\_payroll\_company\_date (company\_id, payment\_date)  
+-- 8. Payrolls (급여)
+CREATE TABLE payrolls (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- NOTE: Running DB uses tenant_id/company_id as VARCHAR/String in some contexts, but here we reflect the schema.
+    company_id VARCHAR(50) NOT NULL, 
+    tenant_id VARCHAR(50) NOT NULL, 
+    
+    title VARCHAR(100) NOT NULL,
+    target_year INT NOT NULL,
+    target_month VARCHAR(7) NOT NULL, -- YYYY-MM
+    payment_date DATE NOT NULL,
+    
+    total_amount DECIMAL(19, 2) NOT NULL,
+    status ENUM('DRAFT', 'CONFIRMED', 'PAID') NOT NULL,
+    
+    created_at DATETIME(6),
+    updated_at DATETIME(6),
+    
+    INDEX idx_payroll_tenant (tenant_id, company_id, target_month)
 ) ENGINE=InnoDB;
 
-\-- 9\. Attendance (근태)  
-CREATE TABLE attendance\_logs (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL, \-- Tenant ID  
-    user\_id BIGINT NOT NULL,  
-    work\_date DATE NOT NULL,  
-      
-    check\_in\_time DATETIME NULL,  
-    check\_out\_time DATETIME NULL,  
-    work\_type VARCHAR(20) DEFAULT 'NORMAL',  
-      
-    INDEX idx\_att\_company\_date (company\_id, work\_date),  
-    INDEX idx\_att\_user\_date (user\_id, work\_date)  
+-- 11. Payslips (급여 명세서 헤더)
+CREATE TABLE payslips (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payroll_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    user_name VARCHAR(100) NOT NULL,
+    
+    total_allowance DECIMAL(19, 2) NOT NULL,
+    total_deduction DECIMAL(19, 2) NOT NULL,
+    net_pay DECIMAL(19, 2) NOT NULL,
+    
+    CONSTRAINT fk_payslips_payroll FOREIGN KEY (payroll_id) REFERENCES payrolls(id)
 ) ENGINE=InnoDB;
 
-\-- 10\. Assets (자산)  
-CREATE TABLE assets (  
-    id BIGINT AUTO\_INCREMENT PRIMARY KEY,  
-    company\_id BIGINT NOT NULL, \-- Tenant ID  
-      
-    category VARCHAR(50) NOT NULL,  
-    model\_name VARCHAR(100) NOT NULL,  
-    status VARCHAR(20) DEFAULT 'IN\_STOCK',  
-    current\_user\_id BIGINT NULL,  
-      
-    INDEX idx\_asset\_company (company\_id),  
-    INDEX idx\_asset\_user (current\_user\_id)  
-) ENGINE=InnoDB;  
+-- 12. Payslip Items (급여 항목)
+CREATE TABLE payslip_items (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payslip_id BIGINT NOT NULL,
+    item_type ENUM('ALLOWANCE', 'DEDUCTION') NOT NULL,
+    item_name VARCHAR(50) NOT NULL,
+    amount DECIMAL(19, 2) NOT NULL,
+    
+    CONSTRAINT fk_payslip_items_payslip FOREIGN KEY (payslip_id) REFERENCES payslips(id)
+) ENGINE=InnoDB;
+
+-- 9. Attendance (근태)
+CREATE TABLE attendance_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL, 
+    user_id BIGINT NOT NULL,
+    date DATE NOT NULL,
+    
+    check_in_time DATETIME NULL,
+    check_out_time DATETIME NULL,
+    work_type VARCHAR(50) DEFAULT NULL,
+    ip_address VARCHAR(50) DEFAULT NULL,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB;
+
+### **4. Future Implementations (Planned)**
+*Below tables are in design but not yet implemented in Running DB.*
+
+-- Assets (자산)
+-- Evaluations (평가)
+

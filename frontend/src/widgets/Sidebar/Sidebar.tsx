@@ -16,7 +16,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { name: 'Organization', href: '/dashboard/org' },
         { name: 'Approval', href: '/dashboard/approval' },
         { name: 'Settings', href: '/dashboard/settings' },
-        { name: 'Vacation', href: '/dashboard/vacation' }, // Added Vacation link
+        { name: 'Vacation', href: '/dashboard/vacation' },
+        { name: 'Payroll', href: '/dashboard/payroll' },
     ];
 
     const Content = (
