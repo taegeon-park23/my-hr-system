@@ -1,4 +1,4 @@
-﻿package com.hr.modules.org.repository;
+package com.hr.modules.org.repository;
 
 import com.hr.modules.org.domain.Department;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-﻿package com.hr.modules.tenant.repository;
+package com.hr.modules.tenant.repository;
 
 import com.hr.modules.tenant.domain.Company;
 import org.springframework.data.jpa.repository.JpaRepository;

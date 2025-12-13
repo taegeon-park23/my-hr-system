@@ -1,4 +1,4 @@
-﻿package com.hr.modules.user.dto;
+package com.hr.modules.user.dto;
 
 import lombok.Data;
 

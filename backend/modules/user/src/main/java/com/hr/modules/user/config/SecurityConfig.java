@@ -1,4 +1,4 @@
-﻿package com.hr.modules.user.config;
+package com.hr.modules.user.config;
 
 import com.hr.common.security.jwt.JwtAuthenticationFilter;
 import com.hr.common.security.jwt.JwtTokenProvider;

@@ -1,4 +1,4 @@
-﻿package com.hr.modules.attendance.repository;
+package com.hr.modules.attendance.repository;
 
 import com.hr.modules.attendance.domain.AttendanceLog;
 import org.springframework.data.jpa.repository.JpaRepository;

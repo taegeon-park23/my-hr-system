@@ -1,4 +1,4 @@
-﻿package com.hr.modules.vacation.repository;
+package com.hr.modules.vacation.repository;
 
 import com.hr.modules.vacation.domain.VacationBalance;
 import org.springframework.data.jpa.repository.JpaRepository;

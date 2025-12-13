@@ -1,4 +1,4 @@
-﻿package com.hr.modules.attendance.domain;
+package com.hr.modules.attendance.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

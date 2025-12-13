@@ -1,4 +1,4 @@
-﻿package com.hr.modules.payroll.domain;
+package com.hr.modules.payroll.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

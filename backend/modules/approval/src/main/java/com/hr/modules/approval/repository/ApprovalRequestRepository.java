@@ -1,4 +1,4 @@
-﻿package com.hr.modules.approval.repository;
+package com.hr.modules.approval.repository;
 
 import com.hr.modules.approval.domain.ApprovalRequest;
 import org.springframework.data.jpa.repository.JpaRepository;

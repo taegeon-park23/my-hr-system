@@ -1,4 +1,4 @@
-﻿package com.hr.modules.org.domain;
+package com.hr.modules.org.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

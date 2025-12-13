@@ -1,4 +1,4 @@
-﻿package com.hr.modules.user.repository;
+package com.hr.modules.user.repository;
 
 import com.hr.modules.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

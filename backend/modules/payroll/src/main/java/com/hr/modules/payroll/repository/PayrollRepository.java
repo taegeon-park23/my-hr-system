@@ -1,4 +1,4 @@
-﻿package com.hr.modules.payroll.repository;
+package com.hr.modules.payroll.repository;
 
 import com.hr.modules.payroll.domain.Payroll;
 import org.springframework.data.jpa.repository.JpaRepository;
