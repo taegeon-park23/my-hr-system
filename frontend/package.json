@@ -2,12 +2,15 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node check-docker.js && next dev",
+    "dev:local": "cross-env IS_DOCKER=true next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "node check-docker.js && storybook dev -p 6006 --ci",
+    "storybook:local": "cross-env IS_DOCKER=true storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -43,6 +46,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.2.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "eslint-plugin-storybook": "^0.8.0",

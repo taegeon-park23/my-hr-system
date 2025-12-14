@@ -204,3 +204,9 @@ This document tracks the relationship between planning documents and their execu
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/frontend_refactoring_improvement_plan4_report.md`
+
+## Level 29: Frontend Docker Migration
+**Plan:** `plan/frontend_docker_migration_plan.md`
+**Status:** 🔄 In Progress
+**Execution Reports:**
+- (Pending)
