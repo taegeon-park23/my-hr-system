@@ -11,7 +11,7 @@ const meta = {
     argTypes: {
         variant: {
             control: 'select',
-            options: ['default', 'secondary', 'destructive', 'outline', 'success', 'warning', 'info'],
+            options: ['default', 'secondary', 'danger', 'success', 'warning', 'info', 'neutral', 'outline'],
         },
     },
 } satisfies Meta<typeof Badge>;
@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        children: 'Badge',
+        children: 'Default',
         variant: 'default',
     },
 };
@@ -33,10 +33,10 @@ export const Secondary: Story = {
     },
 };
 
-export const Destructive: Story = {
+export const Danger: Story = {
     args: {
-        children: 'Destructive',
-        variant: 'destructive',
+        children: 'Danger',
+        variant: 'danger',
     },
 };
 
@@ -58,6 +58,13 @@ export const Info: Story = {
     args: {
         children: 'Info',
         variant: 'info',
+    },
+};
+
+export const Neutral: Story = {
+    args: {
+        children: 'Neutral',
+        variant: 'neutral',
     },
 };
 

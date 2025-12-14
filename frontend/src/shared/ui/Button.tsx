@@ -8,14 +8,15 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-                secondary: 'bg-white text-secondary-700 border border-secondary-300 hover:bg-secondary-50 focus:ring-secondary-500',
-                danger: 'bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500',
+                primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)] focus:ring-[var(--color-primary)]',
+                secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-500',
+                danger: 'bg-[var(--color-danger)] text-white hover:bg-rose-700 focus:ring-[var(--color-danger)]',
+                ghost: 'bg-transparent text-slate-500 hover:bg-slate-100 focus:ring-slate-500',
             },
             size: {
-                sm: 'px-3 py-1.5 text-sm',
-                md: 'px-4 py-2 text-sm',
-                lg: 'px-6 py-3 text-base',
+                sm: 'h-8 px-3 text-sm',
+                md: 'h-10 px-4 text-sm',
+                lg: 'h-12 px-6 text-base',
             },
         },
         defaultVariants: {

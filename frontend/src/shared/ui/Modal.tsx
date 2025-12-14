@@ -33,7 +33,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" />
                 </Transition.Child>
 
                 <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -50,13 +50,13 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
                             <Dialog.Panel className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full ${maxWidthClasses[maxWidth]}`}>
                                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <div className="flex items-start justify-between">
-                                        <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
+                                        <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-[var(--color-text-title)]">
                                             {title}
                                         </Dialog.Title>
                                         <div className="ml-3 flex h-7 items-center">
                                             <button
                                                 type="button"
-                                                className="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                className="relative rounded-md bg-white text-slate-400 hover:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2"
                                                 onClick={onClose}
                                                 ref={cancelButtonRef}
                                             >
@@ -66,7 +66,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="mt-4">
+                                    <div className="mt-4 text-[var(--color-text-body)]">
                                         {children}
                                     </div>
                                 </div>

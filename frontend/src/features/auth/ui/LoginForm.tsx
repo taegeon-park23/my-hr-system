@@ -58,7 +58,7 @@ export const LoginForm = () => {
             />
 
             {error && (
-                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                <div className="text-sm text-[var(--color-danger)] bg-[var(--color-danger-bg)] p-3 rounded-md">
                     {error}
                 </div>
             )}
@@ -74,8 +74,8 @@ export const LoginForm = () => {
             </div>
 
             <div className="text-center text-sm">
-                <span className="text-gray-500">Don&apos;t have an account? </span>
-                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <span className="text-[var(--color-text-sub)]">Don&apos;t have an account? </span>
+                <a href="#" className="font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]">
                     Contact your administrator
                 </a>
             </div>

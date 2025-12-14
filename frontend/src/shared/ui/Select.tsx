@@ -5,15 +5,15 @@ import { cn } from '@/shared/lib/utils';
 import { Icon } from './Icon';
 
 const selectTriggerVariants = cva(
-    "relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm",
+    "relative w-full cursor-default rounded-md border border-slate-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-1 focus:border-[var(--color-primary)] sm:text-sm h-10",
     {
         variants: {
             hasError: {
-                true: "border-red-300 text-red-900 focus:ring-red-500 focus:border-red-500",
+                true: "border-rose-500 text-rose-900 focus:ring-rose-200 focus:border-rose-500",
                 false: "",
             },
             disabled: {
-                true: "bg-gray-100 text-gray-400 cursor-not-allowed",
+                true: "bg-slate-100 text-slate-400 cursor-not-allowed",
                 false: "",
             },
         },
@@ -37,7 +37,7 @@ interface SelectProps {
     onChange?: (value: any) => void;
     placeholder?: string;
     disabled?: boolean;
-    className?: string; // Class for the outer container or trigger?
+    className?: string;
 }
 
 export function Select({
@@ -55,18 +55,18 @@ export function Select({
     return (
         <div className={cn("w-full", className)}>
             {label && (
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                     {label}
                 </label>
             )}
             <Listbox value={value} onChange={onChange} disabled={disabled}>
                 <div className="relative mt-1">
                     <Listbox.Button className={cn(selectTriggerVariants({ hasError: !!error, disabled }))}>
-                        <span className={cn("block truncate", !selectedOption && "text-gray-400")}>
+                        <span className={cn("block truncate", !selectedOption && "text-slate-400")}>
                             {selectedOption ? selectedOption.label : placeholder}
                         </span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                            <Icon name="ChevronUpDownIcon" className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                            <Icon name="ChevronUpDownIcon" className="h-5 w-5 text-slate-400" aria-hidden="true" />
                         </span>
                     </Listbox.Button>
                     <Transition
@@ -82,7 +82,7 @@ export function Select({
                                     className={({ active }) =>
                                         cn(
                                             "relative cursor-default select-none py-2 pl-10 pr-4",
-                                            active ? "bg-primary-100 text-primary-900" : "text-gray-900"
+                                            active ? "bg-slate-100 text-slate-900" : "text-slate-900"
                                         )
                                     }
                                     value={option.value}
@@ -98,7 +98,7 @@ export function Select({
                                                 {option.label}
                                             </span>
                                             {selected ? (
-                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600">
+                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--color-primary)]">
                                                     <Icon name="CheckIcon" className="h-5 w-5" aria-hidden="true" />
                                                 </span>
                                             ) : null}

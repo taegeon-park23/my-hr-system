@@ -3,11 +3,11 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/shared/lib/utils';
 
 const inputVariants = cva(
-    'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500',
+    'block w-full rounded-md border border-slate-300 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-1 focus:border-[var(--color-primary)] sm:text-sm disabled:bg-slate-100 disabled:text-slate-500 h-10 px-3',
     {
         variants: {
             hasError: {
-                true: 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500',
+                true: 'border-rose-500 focus:ring-rose-200 focus:border-rose-500 text-rose-900 placeholder-rose-300',
                 false: '',
             },
         },
