@@ -1,74 +1,61 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from './Select';
+import { useState } from 'react';
 
 const meta: Meta<typeof Select> = {
-    title: 'shared/ui/Select',
+    title: 'Shared/Select',
     component: Select,
     parameters: {
         layout: 'centered',
     },
     tags: ['autodocs'],
     argTypes: {
-        error: {
-            control: 'text',
-            description: 'Error message to display',
-        },
-        label: {
-            control: 'text',
-            description: 'Label for the select',
-        },
+        error: { control: 'text' },
+        label: { control: 'text' },
+        disabled: { control: 'boolean' },
     },
 };
 
 export default meta;
 type Story = StoryObj<typeof Select>;
 
-const sampleOptions = [
+const options = [
     { label: 'Option 1', value: '1' },
     { label: 'Option 2', value: '2' },
     { label: 'Option 3', value: '3' },
 ];
 
-const categoryOptions = [
-    { label: 'LAPTOP', value: 'LAPTOP' },
-    { label: 'MONITOR', value: 'MONITOR' },
-    { label: 'KEYBOARD', value: 'KEYBOARD' },
-    { label: 'MOUSE', value: 'MOUSE' },
-];
-
 export const Default: Story = {
-    args: {
-        options: sampleOptions,
+    render: (args) => {
+        const [value, setValue] = useState(args.value || '1');
+        return <Select {...args} value={value} onChange={setValue} />;
     },
-};
-
-export const WithLabel: Story = {
     args: {
-        label: 'Select an option',
-        options: sampleOptions,
+        label: 'Select Option',
+        options: options,
     },
 };
 
 export const WithError: Story = {
+    render: (args) => {
+        const [value, setValue] = useState(args.value || '1');
+        return <Select {...args} value={value} onChange={setValue} />;
+    },
     args: {
-        label: 'Category',
-        options: categoryOptions,
-        error: '필수 입력 항목입니다.',
+        label: 'Select Option',
+        options: options,
+        error: 'This field is required',
     },
 };
 
 export const Disabled: Story = {
+    render: (args) => {
+        const [value, setValue] = useState(args.value || '1');
+        return <Select {...args} value={value} onChange={setValue} />;
+    },
     args: {
         label: 'Disabled Select',
-        options: sampleOptions,
+        options: options,
         disabled: true,
-    },
-};
-
-export const WithDefaultValue: Story = {
-    args: {
-        label: 'Asset Category',
-        options: categoryOptions,
-        defaultValue: 'MONITOR',
     },
 };
