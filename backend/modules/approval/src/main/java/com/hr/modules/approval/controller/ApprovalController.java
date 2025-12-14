@@ -16,11 +16,22 @@ public class ApprovalController {
         this.approvalRepository = approvalRepository;
     }
 
-    @GetMapping("/inbox/{requesterId}")
-    public ApiResponse<List<ApprovalRequest>> getMyRequests(@PathVariable Long requesterId) {
-        // In real app, requesterId comes from SecurityContext
-        Long companyId = 1L; // Mock
+    @GetMapping("/inbox")
+    public ApiResponse<List<ApprovalRequest>> getMyRequests(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        Long companyId = user.getCompanyId();
+        Long requesterId = user.getId();
         return ApiResponse.success(approvalRepository.findByCompanyIdAndRequesterUserId(companyId, requesterId));
+    }
+
+    @GetMapping("/pending")
+    public ApiResponse<List<ApprovalRequest>> getPendingRequests(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        Long companyId = user.getCompanyId();
+        Long userId = user.getId();
+        return ApiResponse.success(approvalRepository.findPendingRequests(companyId, userId));
     }
     
     @PostMapping("/request")

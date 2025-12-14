@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useApprovalInbox } from '@/features/approval/api/approvalApi';
+import { useApprovalInbox, usePendingApprovals } from '@/features/approval/api/approvalApi';
 import { ApprovalList } from '@/features/approval/ui/ApprovalList';
 import { RequestForm } from '@/features/approval/ui/RequestForm';
 import { Button } from '@/shared/ui/Button';
@@ -11,8 +11,17 @@ import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 
 export default function ApprovalPage() {
     const [showForm, setShowForm] = useState(false);
+    const [activeTab, setActiveTab] = useState<'inbox' | 'pending'>('pending');
     const { user } = useAuthStore();
-    const { data: requests, isLoading, isError, mutate } = useApprovalInbox(user?.id);
+
+    // Hooks should be called unconditionally
+    const inbox = useApprovalInbox(user?.id);
+    const pending = usePendingApprovals(); // New hook call
+
+    const currentData = activeTab === 'inbox' ? inbox.data : pending.data;
+    const currentLoading = activeTab === 'inbox' ? inbox.isLoading : pending.isLoading;
+    const currentError = activeTab === 'inbox' ? inbox.isError : pending.isError;
+    const currentMutate = activeTab === 'inbox' ? inbox.mutate : pending.mutate;
 
     return (
         <ErrorBoundary>
@@ -30,21 +39,44 @@ export default function ApprovalPage() {
                     </div>
                 </div>
 
+                <div className="border-b border-gray-200">
+                    <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button
+                            onClick={() => setActiveTab('pending')}
+                            className={`${activeTab === 'pending'
+                                ? 'border-indigo-500 text-indigo-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                        >
+                            Pending Approvals
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('inbox')}
+                            className={`${activeTab === 'inbox'
+                                ? 'border-indigo-500 text-indigo-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                        >
+                            My Requests
+                        </button>
+                    </nav>
+                </div>
+
                 {showForm && (
                     <RequestForm onSuccess={() => {
                         setShowForm(false);
-                        mutate();
+                        currentMutate();
                     }} />
                 )}
 
-                {isError ? (
+                {currentError ? (
                     <ApiErrorFallback
-                        error={isError}
-                        title="결재함 로드 실패"
-                        onRetry={() => mutate()}
+                        error={currentError}
+                        title="Failed to load approvals"
+                        onRetry={() => currentMutate()}
                     />
                 ) : (
-                    <ApprovalList requests={requests} isLoading={isLoading} />
+                    <ApprovalList requests={currentData} isLoading={currentLoading} />
                 )}
             </div>
         </ErrorBoundary>

@@ -7,7 +7,7 @@ export const queryKeys = {
     },
     approval: {
         all: ['approval'] as const,
-        inbox: (userId: number) => `/approval/inbox/${userId}`,
+        inbox: (userId: number) => `/approval/inbox`,
         outbox: (userId: number) => `/approval/outbox?userId=${userId}`,
         detail: (id: number) => `/approval/${id}`,
     },

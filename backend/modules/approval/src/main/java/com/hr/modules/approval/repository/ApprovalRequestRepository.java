@@ -7,5 +7,11 @@ import java.util.List;
 public interface ApprovalRequestRepository extends JpaRepository<ApprovalRequest, Long> {
     List<ApprovalRequest> findByCompanyIdAndRequesterUserId(Long companyId, Long requesterUserId);
 
+    @org.springframework.data.jpa.repository.Query("SELECT r FROM ApprovalRequest r " +
+           "JOIN com.hr.modules.approval.domain.ApprovalStep s ON s.request = r " +
+           "WHERE s.approverId = :userId AND s.status = 'PENDING' " +
+           "AND r.companyId = :companyId")
+    List<ApprovalRequest> findPendingRequests(@org.springframework.data.repository.query.Param("companyId") Long companyId, 
+                                              @org.springframework.data.repository.query.Param("userId") Long userId);
 }
 

@@ -17,6 +17,19 @@ export const useApprovalInbox = (userId: number | undefined) => {
     };
 };
 
+export const usePendingApprovals = () => {
+    const { data, error, isLoading, mutate } = useSWR<ApprovalRequest[]>(
+        '/approval/pending',
+        fetcher
+    );
+    return {
+        data: data || [],
+        isLoading,
+        isError: error,
+        mutate
+    };
+};
+
 export const createApprovalRequest = async (data: Partial<ApprovalRequest>): Promise<void> => {
     await client.post('/approval/request', data);
 };

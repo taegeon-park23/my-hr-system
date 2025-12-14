@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { NAVIGATION_ITEMS } from '@/shared/config/navigation';
 import { Icon } from '@/shared/ui/Icon';
@@ -13,8 +13,9 @@ export const Sidebar = () => {
     const { isSidebarOpen, setSidebarOpen } = useUIStore();
     const isOpen = isSidebarOpen;
     const onClose = () => setSidebarOpen(false);
+    const router = useRouter();
     const pathname = usePathname();
-    const { user } = useAuthStore();
+    const { user, logout } = useAuthStore();
 
     const filteredNavigation = NAVIGATION_ITEMS.filter(item => {
         return hasPermission(user, item.requiredRole);
@@ -54,11 +55,23 @@ export const Sidebar = () => {
 
             <div className="flex-shrink-0 flex bg-gray-700 p-4">
                 <div className="flex-shrink-0 w-full group block">
-                    <div className="flex items-center">
-                        <div className="ml-3">
-                            <p className="text-sm font-medium text-white">{user?.name || 'Guest'}</p>
-                            <p className="text-xs font-medium text-gray-300">{user?.role || 'View Profile'}</p>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-white">{user?.name || 'Guest'}</p>
+                                <p className="text-xs font-medium text-gray-300">{user?.role || 'View Profile'}</p>
+                            </div>
                         </div>
+                        <button
+                            onClick={() => {
+                                logout();
+                                router.push('/login');
+                            }}
+                            className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-600 transition-colors"
+                            aria-label="Logout"
+                        >
+                            <Icon name="ArrowRightOnRectangleIcon" className="h-6 w-6" />
+                        </button>
                     </div>
                 </div>
             </div>

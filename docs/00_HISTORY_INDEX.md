@@ -235,3 +235,15 @@ This document tracks the relationship between planning documents and their execu
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/frontend_refactoring_polish_report.md`
+
+## Level 34: Approval Module Test Data & Guide
+**Plan:** `plan/data_approval_module_test_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/data_approval_module_test_report.md`
+
+## Level 35: Approval Module Read-Path Fix
+**Plan:** `plan/backend_approval_fix_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/backend_approval_fix_report.md`
