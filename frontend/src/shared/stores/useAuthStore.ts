@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '@/shared/model/types';
 import { STORAGE_KEYS } from '@/shared/config/constants';
+import Cookies from 'js-cookie';
 
 interface AuthState {
     user: User | null;
@@ -19,11 +20,11 @@ export const useAuthStore = create<AuthState>()(
             accessToken: null,
             login: (user, token) => {
                 set({ user, isAuthenticated: true, accessToken: token });
-                localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+                Cookies.set(STORAGE_KEYS.ACCESS_TOKEN, token, { expires: 7 }); // 7 days
             },
             logout: () => {
                 set({ user: null, isAuthenticated: false, accessToken: null });
-                localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+                Cookies.remove(STORAGE_KEYS.ACCESS_TOKEN);
             },
         }),
         {

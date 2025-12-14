@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { STORAGE_KEYS } from '@/shared/config/constants';
+import Cookies from 'js-cookie';
 
 interface AuthGuardProps {
     children: React.ReactNode;
@@ -19,14 +20,14 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         if (hasChecked.current) return;
         hasChecked.current = true;
 
-        const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+        const token = Cookies.get(STORAGE_KEYS.ACCESS_TOKEN);
         if (!token && !isAuthenticated) {
             router.push('/login');
         }
     }, [isAuthenticated, router]);
 
-    // If not authenticated and no token in localStorage
-    if (!isAuthenticated && typeof window !== 'undefined' && !localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) {
+    // If not authenticated and no token in cookies
+    if (!isAuthenticated && typeof window !== 'undefined' && !Cookies.get(STORAGE_KEYS.ACCESS_TOKEN)) {
 
         return (
             <div className="min-h-screen flex items-center justify-center">

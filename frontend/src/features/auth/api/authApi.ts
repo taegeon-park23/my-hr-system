@@ -1,6 +1,6 @@
 import { client } from '@/shared/api/client';
 import { ApiResponse, User } from '@/shared/model/types';
-import { STORAGE_KEYS } from '@/shared/config/constants';
+
 
 export interface LoginRequest {
     email: string;
@@ -20,7 +20,8 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
         throw new Error('No data received');
     }
 
-    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.accessToken);
+    // Token is handled by the caller (store) or useAuthStore logic
+    // localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, data.accessToken); // Removed in favor of Cookie approach handled by store
 
     return data;
 };

@@ -1,5 +1,7 @@
+import { env } from './env';
+
 export const APP_CONFIG = {
-    API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+    API_URL: env.NEXT_PUBLIC_API_URL,
     APP_NAME: 'Next-Gen HR System',
     DEFAULT_PAGE_SIZE: 10,
     DATE_FORMAT: 'YYYY-MM-DD',

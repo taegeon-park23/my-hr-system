@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { APP_CONFIG, STORAGE_KEYS } from '@/shared/config/constants';
+import Cookies from 'js-cookie';
 
 const BASE_URL = APP_CONFIG.API_URL;
 
@@ -16,7 +17,7 @@ export const client = axios.create({
 client.interceptors.request.use(
     (config) => {
         if (typeof window !== 'undefined') {
-            const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+            const token = Cookies.get(STORAGE_KEYS.ACCESS_TOKEN);
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -41,7 +42,7 @@ export const setupInterceptors = (onUnauthorized: UnauthorizedCallback, onError:
             const status = error.response?.status;
 
             if (status === 401 || status === 403) {
-                localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+                Cookies.remove(STORAGE_KEYS.ACCESS_TOKEN);
                 onUnauthorized();
             } else {
                 // Standardize error object

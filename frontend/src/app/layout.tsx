@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { InterceptorInitializer } from "@/shared/api/InterceptorInitializer";
-import { ToastProvider } from "@/shared/ui/Toast";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
     title: "HR System",
@@ -16,10 +16,10 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body>
-                <ToastProvider>
+                <Providers>
                     <InterceptorInitializer />
                     {children}
-                </ToastProvider>
+                </Providers>
             </body>
         </html>
     );
