@@ -16,9 +16,9 @@ export function useMyTeamCount(userId: number | undefined) {
     };
 }
 
-export function useOrgTree() {
+export function useOrgTree(companyId: number | undefined) {
     const { data, error, isLoading, mutate } = useSWR<Department[]>(
-        queryKeys.org.tree,
+        companyId ? queryKeys.org.tree(companyId) : null,
         fetcher
     );
 

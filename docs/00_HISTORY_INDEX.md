@@ -209,4 +209,16 @@ This document tracks the relationship between planning documents and their execu
 **Plan:** `plan/frontend_docker_migration_plan.md`
 **Status:** 🔄 In Progress
 **Execution Reports:**
+- `done/frontend_refactoring_improvement_plan4_report.md` (Docker Migration Pending)
+
+## Level 30: Backend API Migration & User Features
+**Plan:** `plan/backend_api_migration_plan.md`
+**Status:** 🔄 In Progress
+**Execution Reports:**
 - (Pending)
+
+## Level 31: Backend Evaluation API Standardization
+**Plan:** `plan/backend_evaluation_api_fix_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/backend_evaluation_api_fix_report.md`

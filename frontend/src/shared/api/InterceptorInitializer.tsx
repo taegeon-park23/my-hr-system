@@ -12,6 +12,10 @@ export function InterceptorInitializer() {
     const logout = useAuthStore((state) => state.logout);
 
     useEffect(() => {
+        useAuthStore.persist.rehydrate();
+    }, []);
+
+    useEffect(() => {
         setupInterceptors(
             // onUnauthorized
             () => {

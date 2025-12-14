@@ -7,13 +7,13 @@ export const queryKeys = {
     },
     approval: {
         all: ['approval'] as const,
-        inbox: (userId: number) => `/approval/inbox?userId=${userId}`,
+        inbox: (userId: number) => `/approval/inbox/${userId}`,
         outbox: (userId: number) => `/approval/outbox?userId=${userId}`,
         detail: (id: number) => `/approval/${id}`,
     },
     asset: {
         all: ['asset'] as const,
-        list: '/assets',
+        list: (companyId: number) => `/admin/assets?companyId=${companyId}`, // Updated to admin endpoint
         my: (userId: number) => `/assets/my?userId=${userId}`,
         detail: (id: number) => `/assets/${id}`,
     },
@@ -34,7 +34,7 @@ export const queryKeys = {
     },
     org: {
         all: ['org'] as const,
-        tree: '/org/tree',
+        tree: (companyId: number) => `/org/tree/${companyId}`,
         dept: (id: number) => `/org/departments/${id}`,
         teamCount: (userId: number) => `/users/team-count?userId=${userId}`,
     },

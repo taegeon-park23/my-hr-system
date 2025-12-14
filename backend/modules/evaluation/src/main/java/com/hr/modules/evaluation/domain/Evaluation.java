@@ -24,7 +24,18 @@ public class Evaluation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cycle_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private EvaluationCycle cycle;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("cycleId")
+    public Long getCycleId() {
+        return cycle != null ? cycle.getId() : null;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("cycleTitle")
+    public String getCycleTitle() {
+        return cycle != null ? cycle.getTitle() : null;
+    }
 
     @Column(name = "target_user_id", nullable = false)
     private Long targetUserId;

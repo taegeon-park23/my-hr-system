@@ -48,7 +48,7 @@ export interface CreateAssetRequest {
 
 export function useAdminAssets(companyId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<Asset[]>(
-        companyId ? queryKeys.asset.list : null, // Todo: Adjust backend to filter by companyId if needed, or queryKeys.asset.list already implies it for admin? Using .list for now
+        companyId ? queryKeys.asset.list(companyId) : null,
         fetcher
     );
 

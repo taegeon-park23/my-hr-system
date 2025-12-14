@@ -1,10 +1,10 @@
 package com.hr.modules.evaluation.controller;
 
+import com.hr.common.dto.ApiResponse;
 import com.hr.modules.evaluation.domain.EvaluationCycle;
 import com.hr.modules.evaluation.dto.CreateCycleRequest;
 import com.hr.modules.evaluation.service.EvaluationCycleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class EvaluationAdminController {
     private final EvaluationCycleService evaluationCycleService;
 
     @PostMapping
-    public ResponseEntity<EvaluationCycle> createCycle(@RequestBody CreateCycleRequest request) {
+    public ApiResponse<EvaluationCycle> createCycle(@RequestBody CreateCycleRequest request) {
         EvaluationCycle cycle = EvaluationCycle.builder()
                 .companyId(request.getCompanyId())
                 .title(request.getTitle())
@@ -26,21 +26,21 @@ public class EvaluationAdminController {
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .build();
-        return ResponseEntity.ok(evaluationCycleService.createCycle(cycle));
+        return ApiResponse.success(evaluationCycleService.createCycle(cycle));
     }
 
     @GetMapping
-    public ResponseEntity<List<EvaluationCycle>> getCycles(@RequestParam Long companyId) {
-        return ResponseEntity.ok(evaluationCycleService.getCyclesByCompany(companyId));
+    public ApiResponse<List<EvaluationCycle>> getCycles(@RequestParam Long companyId) {
+        return ApiResponse.success(evaluationCycleService.getCyclesByCompany(companyId));
     }
 
     @PostMapping("/{id}/start")
-    public ResponseEntity<EvaluationCycle> startCycle(@PathVariable Long id) {
-        return ResponseEntity.ok(evaluationCycleService.startCycle(id));
+    public ApiResponse<EvaluationCycle> startCycle(@PathVariable Long id) {
+        return ApiResponse.success(evaluationCycleService.startCycle(id));
     }
     
     @PostMapping("/{id}/close")
-    public ResponseEntity<EvaluationCycle> closeCycle(@PathVariable Long id) {
-        return ResponseEntity.ok(evaluationCycleService.closeCycle(id));
+    public ApiResponse<EvaluationCycle> closeCycle(@PathVariable Long id) {
+        return ApiResponse.success(evaluationCycleService.closeCycle(id));
     }
 }

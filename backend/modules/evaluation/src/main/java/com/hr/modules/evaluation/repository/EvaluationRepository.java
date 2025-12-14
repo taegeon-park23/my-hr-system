@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
-    List<Evaluation> findByCycleId(Long cycleId);
-    Optional<Evaluation> findByCycleIdAndTargetUserId(Long cycleId, Long targetUserId);
+    List<Evaluation> findByCycle_Id(Long cycleId);
+    Optional<Evaluation> findByCycle_IdAndTargetUserId(Long cycleId, Long targetUserId);
     List<Evaluation> findByTargetUserId(Long targetUserId);
 }

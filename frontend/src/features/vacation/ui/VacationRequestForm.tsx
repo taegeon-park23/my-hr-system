@@ -37,8 +37,11 @@ export const VacationRequestForm = () => {
 
     const onSubmit = async (data: VacationFormData) => {
         if (!user) {
-            alert('로그인이 필요합니다.');
-            return;
+            if (!user) {
+                alert('로그인이 필요합니다. 다시 로그인해주세요.');
+                // router.push('/login'); // Middleware might redirect back if cookie exists, forcing manual re-login logic elsewhere
+                return;
+            }
         }
 
         setIsLoading(true);

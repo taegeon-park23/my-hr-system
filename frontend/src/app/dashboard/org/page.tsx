@@ -6,8 +6,11 @@ import { Button } from '@/shared/ui/Button';
 import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 
+import { useAuthStore } from '@/shared/stores/useAuthStore';
+
 export default function OrgPage() {
-    const { data, isLoading, isError, mutate } = useOrgTree();
+    const user = useAuthStore((state) => state.user);
+    const { data, isLoading, isError, mutate } = useOrgTree(user?.companyId);
 
     return (
         <ErrorBoundary>
