@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useDashboardStats } from './model/useDashboardStats';
 import { StatCard } from '@/shared/ui/StatCard';

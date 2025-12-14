@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/ui/Button';
@@ -47,6 +49,7 @@ export const LoginForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@samsung.com"
+                error={error ? ' ' : undefined} // Logic to show generic error if needed, but handled by alert below usually
             />
 
             <Input
@@ -58,7 +61,7 @@ export const LoginForm = () => {
             />
 
             {error && (
-                <div className="text-sm text-[var(--color-danger)] bg-[var(--color-danger-bg)] p-3 rounded-md">
+                <div className="text-sm text-danger bg-danger-bg p-3 rounded-md" role="alert">
                     {error}
                 </div>
             )}
@@ -74,8 +77,8 @@ export const LoginForm = () => {
             </div>
 
             <div className="text-center text-sm">
-                <span className="text-[var(--color-text-sub)]">Don&apos;t have an account? </span>
-                <a href="#" className="font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]">
+                <span className="text-text-sub">Don&apos;t have an account? </span>
+                <a href="#" className="font-medium text-primary hover:text-primary-dark">
                     Contact your administrator
                 </a>
             </div>

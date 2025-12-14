@@ -1,17 +1,15 @@
-'use client';
-
 import { LoginForm } from '@/features/auth/ui/LoginForm';
 
 export default function LoginPage() {
     return (
-        <div className="min-h-screen bg-[var(--color-bg-base)] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-bg-base flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--color-text-title)]">
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-text-title">
                     Sign in to HR System
                 </h2>
-                <p className="mt-2 text-center text-sm text-[var(--color-text-sub)]">
+                <p className="mt-2 text-center text-sm text-text-sub">
                     Or{' '}
-                    <a href="#" className="font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]">
+                    <a href="#" className="font-medium text-primary hover:text-primary-dark">
                         contact support if you forgot password
                     </a>
                 </p>
