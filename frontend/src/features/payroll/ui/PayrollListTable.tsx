@@ -8,11 +8,13 @@ interface Props {
     onViewDetail: (id: number) => void;
 }
 
+import { PayrollStatus } from '../model/constants';
+
 export function PayrollListTable({ data, onViewDetail }: Props) {
     const getStatusVariant = (status: string) => {
         switch (status) {
-            case 'CONFIRMED': return 'success';
-            case 'PAID': return 'info';
+            case PayrollStatus.CONFIRMED: return 'success';
+            case PayrollStatus.PAID: return 'info';
             default: return 'secondary';
         }
     };

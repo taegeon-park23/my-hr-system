@@ -1,11 +1,11 @@
 # 프론트엔드 리팩토링 및 고도화 4 결과 보고서
 
-**Status:** 🔄 In Progress (Step 2 Completed)
+**Status:** 🔄 In Progress (Step 3 Completed)
 **Date:** 2025-12-14
 
 ## 1. 개요 (Overview)
 본 리포트는 "Frontend Refactoring & Improvement Plan 4"의 이행 과정을 기록합니다.
-**Step 1: 기반 구조 재정비**에 이어 **Step 2: 공통 UI 라이브러리 고도화**를 완료했습니다.
+**Step 1: 기반 구조 재정비**, **Step 2: 공통 UI 라이브러리 고도화**에 이어 **Step 3: 비즈니스 로직 및 위젯 리팩토링**을 완료했습니다.
 
 ## 2. 작업 내역 (Work Included)
 
@@ -30,14 +30,20 @@
     - `PayrollListTable`: 기존 HTML table 태그 및 하드코딩된 배지 스타일을 제거하고, 공통 `Table`, `Badge`, `Button` 컴포넌트로 전면 교체.
     - `VacationRequestList`: 마찬가지로 `Table`, `Badge` 컴포넌트 적용.
 - **[STORYBOOK]** (Note: Storybook 실행이 필요하지만 빌드 테스트로 대체)
+### Step 3: 비즈니스 로직 및 위젯 리팩토링 (Features & Widgets) ✅
+- **[REFACTOR] Hardcoded Logic 제거**
+    - `features/vacation/model/constants.ts` 생성: `VacationType`, `VacationStatus` Enum 및 Label 정의.
+    - `features/payroll/model/constants.ts` 생성: `PayrollStatus` Enum 및 Label 정의.
+    - `PayrollListTable`, `VacationRequestList` 리팩토링: 하드코딩된 문자열 비교 로직을 Enum 기반으로 변경하여 타입 안전성 확보.
+- **[REFLECT] 모델 타입 업데이트**
+    - `features/vacation/model/types.ts`: `VacationRequest`의 상태 타입을 Enum으로 변경.
+    - `features/payroll/model/types.ts`: `Payroll`의 상태 타입을 Enum으로 변경.
 
 ## 3. 검증 결과 (Verification Results)
 - **빌드 테스트 (`npm run build`)**: ✅ 성공
-    - Middleware 인식 확인 (`Proxy (Middleware)`).
-    - 타입 에러 없음.
-    - 새롭게 작성된 컴포넌트들의 TS 타입 및 Import 경로가 올바름을 확인.
-    - 리팩토링된 페이지들의 빌드 정상 완료.
+    - Enum 참조 변경에 따른 컴파일 에러 없음.
+    - 기존 로직과 동일하게 동작함을 코드 리뷰를 통해 확인.
 
 ## 4. 향후 계획 (Next Steps)
-- **Step 3**: 비즈니스 로직 및 위젯 리팩토링 (Hardcoded Logic 제거, Form 표준화).
-- **Step 4**: 성능 최적화.
+- **Step 4**: 성능 최적화 (Server Components 도입 검토).
+- **마무리**: 전체 리팩토링 결과 종합 및 최종 커밋.

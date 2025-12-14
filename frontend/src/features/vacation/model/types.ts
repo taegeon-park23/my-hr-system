@@ -1,3 +1,5 @@
+import { VacationStatus, VacationType } from './constants';
+
 export interface VacationBalance {
     id: number;
     companyId: number;
@@ -10,11 +12,11 @@ export interface VacationBalance {
 
 export interface VacationRequest {
     id: number;
-    vacationType: 'ANNUAL' | 'HALF_AM' | 'HALF_PM' | 'SICK' | 'UNPAID';
+    vacationType: VacationType;
     startDate: string;
     endDate: string;
     requestDays: number;
     reason: string;
-    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    status: VacationStatus;
     createdAt: string;
 }

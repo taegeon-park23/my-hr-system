@@ -1,3 +1,5 @@
+import { PayrollStatus } from './constants';
+
 export interface PayslipSummary {
     id: number;
     year: number;
@@ -12,7 +14,7 @@ export interface Payroll {
     targetMonth: string;
     paymentDate: string;
     totalAmount: number;
-    status: 'DRAFT' | 'CONFIRMED' | 'PAID'; // Inferred common status
+    status: PayrollStatus;
 }
 
 export interface PayrollCreateRequest {

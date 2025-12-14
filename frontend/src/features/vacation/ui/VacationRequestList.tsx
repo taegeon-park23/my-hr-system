@@ -3,6 +3,8 @@ import { VacationRequest } from '../model/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/Table';
 import { Badge } from '@/shared/ui/Badge';
 
+import { VacationStatus } from '../model/constants';
+
 interface Props {
     requests: VacationRequest[];
     isLoading: boolean;
@@ -15,8 +17,8 @@ export const VacationRequestList: React.FC<Props> = ({ requests, isLoading }) =>
 
     const getStatusVariant = (status: string) => {
         switch (status) {
-            case 'APPROVED': return 'success';
-            case 'REJECTED': return 'destructive';
+            case VacationStatus.APPROVED: return 'success';
+            case VacationStatus.REJECTED: return 'destructive';
             default: return 'warning';
         }
     };
