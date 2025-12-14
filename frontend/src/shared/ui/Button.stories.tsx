@@ -14,6 +14,12 @@ const meta: Meta<typeof Button> = {
             control: 'select',
             options: ['sm', 'md', 'lg'],
         },
+        disabled: {
+            control: 'boolean',
+        },
+        isLoading: {
+            control: 'boolean',
+        },
     },
 };
 
@@ -53,5 +59,27 @@ export const Loading: Story = {
         variant: 'primary',
         isLoading: true,
         children: 'Loading...',
+    },
+};
+
+export const Disabled: Story = {
+    args: {
+        variant: 'primary',
+        disabled: true,
+        children: 'Disabled Button',
+    },
+};
+
+export const Small: Story = {
+    args: {
+        size: 'sm',
+        children: 'Small Button',
+    },
+};
+
+export const Large: Story = {
+    args: {
+        size: 'lg',
+        children: 'Large Button',
     },
 };

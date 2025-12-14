@@ -26,6 +26,13 @@ export const Default: Story = {
     },
 };
 
+export const Primary: Story = {
+    args: {
+        children: 'Primary',
+        variant: 'primary',
+    },
+};
+
 export const Secondary: Story = {
     args: {
         children: 'Secondary',

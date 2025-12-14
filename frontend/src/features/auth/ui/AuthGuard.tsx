@@ -13,7 +13,7 @@ interface AuthGuardProps {
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
     const router = useRouter();
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, _hasHydrated } = useAuthStore();
     const hasChecked = useRef(false);
 
     useEffect(() => {
@@ -26,14 +26,23 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         }
     }, [isAuthenticated, router]);
 
-    // If not authenticated and no token in cookies
-    if (!isAuthenticated && typeof window !== 'undefined' && !Cookies.get(STORAGE_KEYS.ACCESS_TOKEN)) {
+    const token = typeof window !== 'undefined' ? Cookies.get(STORAGE_KEYS.ACCESS_TOKEN) : null;
 
+    // Show loading if:
+    // 1. We have a token but store hasn't hydrated yet (prevent Guest view flash)
+    // 2. We are not authenticated and checking (legacy check)
+    if ((token && !_hasHydrated) || (!isAuthenticated && token && !_hasHydrated)) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
             </div>
         );
+    }
+
+    // If no token and not authenticated, we rely on the useEffect to redirect, 
+    // but we can render children or null. Usually null or loader until redirect happens.
+    if (!isAuthenticated && !token) {
+        return null;
     }
 
     return <>{children}</>;
