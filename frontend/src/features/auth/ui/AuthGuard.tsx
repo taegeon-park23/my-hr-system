@@ -6,6 +6,8 @@ import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { STORAGE_KEYS } from '@/shared/config/constants';
 import Cookies from 'js-cookie';
 
+import { Spinner } from '@/shared/ui/Spinner';
+
 interface AuthGuardProps {
     children: React.ReactNode;
     requiredRole?: string; // Future expansion
@@ -34,10 +36,13 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     if (!isMounted || !_hasHydrated) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                <Spinner className="h-8 w-8 text-indigo-600" />
             </div>
         );
     }
+
+    // Check token again for render logic
+    const token = Cookies.get(STORAGE_KEYS.ACCESS_TOKEN);
 
     // If no token and not authenticated, we rely on the useEffect to redirect, 
     // but we can render children or null. Usually null or loader until redirect happens.
