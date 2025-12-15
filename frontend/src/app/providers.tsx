@@ -26,6 +26,8 @@ function SWRConfigProvider({ children }: { children: React.ReactNode }) {
                     }
                 },
                 shouldRetryOnError: false,
+                revalidateOnFocus: false,
+                dedupingInterval: 5000,
                 focusThrottleInterval: 30000,
             }}
         >

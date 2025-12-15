@@ -279,3 +279,9 @@ This document tracks the relationship between planning documents and their execu
 - `done/frontend_auth_hydration_fix_report.md`
 
 
+
+## Level 40: Frontend Data Fetching Refactor
+**Plan:** `plan/frontend_data_fetching_refactor_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/frontend_data_fetching_refactor_report.md`
