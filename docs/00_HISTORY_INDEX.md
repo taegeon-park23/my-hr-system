@@ -266,3 +266,9 @@ This document tracks the relationship between planning documents and their execu
 **Execution Reports:**
 - `done/fix_vacation_company_id_report.md`
 
+## Level 38: Backend Quality & Architecture Refactoring
+**Plan:** `plan/backend_refactoring_v2_quality_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/backend_refactoring_v2_quality_report.md`
+

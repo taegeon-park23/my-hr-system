@@ -43,5 +43,9 @@ public class AttendanceService {
 
         log.checkOut(LocalDateTime.now());
     }
+
+    public java.util.List<AttendanceLog> getMyLogs(Long userId) {
+        return attendanceRepository.findAllByUserIdOrderByDateDesc(userId);
+    }
 }
 
