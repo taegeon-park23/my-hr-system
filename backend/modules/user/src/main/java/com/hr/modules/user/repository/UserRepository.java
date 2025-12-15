@@ -8,5 +8,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     java.util.List<User> findByCompanyId(Long companyId);
     long countByDeptId(Long deptId);
+    
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE u.deptId = :deptId AND u.role IN ('TENANT_ADMIN', 'MANAGER')")
+    java.util.List<User> findManagersByDeptId(@org.springframework.data.repository.query.Param("deptId") Long deptId);
 }
 

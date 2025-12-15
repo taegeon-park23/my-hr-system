@@ -45,4 +45,22 @@ public class UserService implements UserModuleApi {
                         .build())
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    @Override
+    public Long getManagerIdOfUser(Long userId) {
+        User requester = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        
+        if (requester.getDeptId() == null) {
+            throw new IllegalStateException("User does not belong to any department");
+        }
+
+        java.util.List<User> managers = userRepository.findManagersByDeptId(requester.getDeptId());
+        
+        return managers.stream()
+                .filter(u -> !u.getId().equals(userId))
+                .map(User::getId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No manager found for department: " + requester.getDeptId()));
+    }
 }

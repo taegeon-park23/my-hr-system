@@ -11,9 +11,12 @@ import java.util.List;
 public class ApprovalController {
 
     private final ApprovalRequestRepository approvalRepository;
+    private final com.hr.modules.approval.service.ApprovalService approvalService;
 
-    public ApprovalController(ApprovalRequestRepository approvalRepository) {
+    public ApprovalController(ApprovalRequestRepository approvalRepository, 
+                              com.hr.modules.approval.service.ApprovalService approvalService) {
         this.approvalRepository = approvalRepository;
+        this.approvalService = approvalService;
     }
 
     @GetMapping("/inbox")
@@ -35,9 +38,21 @@ public class ApprovalController {
     }
     
     @PostMapping("/request")
-    public ApiResponse<ApprovalRequest> createRequest(@RequestBody ApprovalRequest request) {
-        // Basic implementation
-        return ApiResponse.success(approvalRepository.save(request));
+    public ApiResponse<Long> createRequest(
+            @RequestBody ApprovalRequest request,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        com.hr.modules.approval.api.dto.ApprovalRequestCommand command = com.hr.modules.approval.api.dto.ApprovalRequestCommand.builder()
+                .companyId(user.getCompanyId())
+                .requesterId(user.getId())
+                // Use defaults if null
+                .resourceType(request.getResourceType() != null ? request.getResourceType() : "GENERAL")
+                .resourceId(request.getResourceId() != null ? request.getResourceId() : 0L)
+                .title(request.getTitle())
+                .description(null) // Not in basic entity
+                .build();
+
+        return ApiResponse.success(approvalService.createApproval(command));
     }
 }
 
