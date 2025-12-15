@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ApprovalRequest } from '../model/types';
 
 interface ApprovalListProps {
@@ -19,7 +20,7 @@ export const ApprovalList = ({ requests, isLoading }: ApprovalListProps) => {
                 ) : (
                     requests.map((request) => (
                         <li key={request.id}>
-                            <div className="block hover:bg-gray-50">
+                            <Link href={`/dashboard/approval/${request.id}`} className="block hover:bg-gray-50">
                                 <div className="px-4 py-4 sm:px-6">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-medium text-indigo-600 truncate">{request.title}</p>
@@ -44,7 +45,7 @@ export const ApprovalList = ({ requests, isLoading }: ApprovalListProps) => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         </li>
                     ))
                 )}

@@ -30,6 +30,19 @@ export const usePendingApprovals = () => {
     };
 };
 
+export const useApprovalDetail = (id: number) => {
+    const { data, error, isLoading, mutate } = useSWR<ApprovalRequest>(
+        queryKeys.approval.detail(id),
+        fetcher
+    );
+    return {
+        data,
+        isLoading,
+        isError: error,
+        mutate
+    };
+};
+
 export const createApprovalRequest = async (data: Partial<ApprovalRequest>): Promise<void> => {
     await client.post('/approval/request', data);
 };

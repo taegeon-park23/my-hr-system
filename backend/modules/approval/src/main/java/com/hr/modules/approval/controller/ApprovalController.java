@@ -54,5 +54,10 @@ public class ApprovalController {
 
         return ApiResponse.success(approvalService.createApproval(command));
     }
+
+    @GetMapping("/{id}")
+    public ApiResponse<ApprovalRequest> getApprovalDetail(@PathVariable Long id) {
+        return ApiResponse.success(approvalService.getApprovalRequest(id));
+    }
 }
 

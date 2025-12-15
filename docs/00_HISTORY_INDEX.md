@@ -253,3 +253,9 @@ This document tracks the relationship between planning documents and their execu
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/backend_approval_step_creation_report.md`
+
+## Level 37: Approval Visibility & API Fix
+**Plan:** `plan/bugfix_approval_visibility_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/bugfix_approval_visibility_report.md`

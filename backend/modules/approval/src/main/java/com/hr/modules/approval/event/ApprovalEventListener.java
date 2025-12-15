@@ -38,7 +38,7 @@ public class ApprovalEventListener {
             log.info("Created ApprovalStep for Request: {} assigned to Approver: {}", request.getId(), managerId);
 
         } catch (Exception e) {
-            log.error("Failed to create approval step for request: {}", event.getApprovalId(), e);
+            log.error("Failed to create approval step for request: {}. Cause: {}", event.getApprovalId(), e.getMessage(), e);
             // In a real system, we might want to update the request status to ERROR or retry.
         }
     }

@@ -41,4 +41,10 @@ public class ApprovalService implements ApprovalModuleApi {
         
         return saved.getId();
     }
+
+    @Transactional(readOnly = true)
+    public ApprovalRequest getApprovalRequest(Long id) {
+        return approvalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + id));
+    }
 }
