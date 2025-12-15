@@ -43,5 +43,13 @@ public class User {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
 

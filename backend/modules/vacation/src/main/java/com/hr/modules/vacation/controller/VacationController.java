@@ -20,27 +20,28 @@ public class VacationController {
     @GetMapping("/balance")
     public ApiResponse<VacationBalance> getMyBalance(
             @RequestParam(defaultValue = "2025") int year,
-            @RequestParam Long userId // Mocking UserContext
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
-        Long companyId = 1L; // Mock
-        return ApiResponse.success(vacationService.getBalance(companyId, userId, year));
+        return ApiResponse.success(vacationService.getBalance(user.getCompanyId(), user.getId(), year));
     }
 
     @GetMapping("/requests")
-    public ApiResponse<List<VacationRequest>> getMyRequests(@RequestParam Long userId) {
-        return ApiResponse.success(vacationService.getMyRequests(userId));
+    public ApiResponse<List<VacationRequest>> getMyRequests(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        return ApiResponse.success(vacationService.getMyRequests(user.getId()));
     }
 
     @PostMapping("/request")
     public ApiResponse<VacationRequest> requestVacation(
             @RequestBody VacationRequestDto dto,
-            @RequestParam Long userId // Mocking UserContext
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
-        Long companyId = 1L; // Mock
+
         return ApiResponse.success(
                 vacationService.requestVacation(
-                        companyId, 
-                        userId, 
+                        user.getCompanyId(), 
+                        user.getId(), 
                         dto.getType(), 
                         dto.getStartDate(), 
                         dto.getEndDate(), 

@@ -9,6 +9,8 @@
 -   **API Endpoint 추가**: `GET /api/approval/{id}` 엔드포인트 구현 내역을 `ApprovalController`에 추가했습니다.
 -   **Service Logic 보강**: `ApprovalService.getApprovalRequest(Long id)` 메서드를 추가했습니다.
 -   **Error Handling 강화**: `ApprovalEventListener`에서 매니저 조회 실패 시 발생하는 예외를 로그로 명확히 남기도록 개선했습니다.
+-   **Transaction Fix**: `ApprovalService.createInitialApprovalStep` 메서드에 `@Transactional(propagation = REQUIRES_NEW)`를 적용하여, `AFTER_COMMIT` 이벤트 리스너에서도 독립된 트랜잭션으로 결재 단계를 저장하도록 수정했습니다.
+-   **MailService Fix**: `MailService`에서 `@Transactional`을 제거하여 이메일 전송 실패가 전체 트랜잭션을 롤백시키지 않도록 격리했습니다.
 
 ### 2.2 Frontend (`frontend`)
 -   **Hook 추가**: `useApprovalDetail` Hook을 `src/features/approval/api/approvalApi.ts`에 추가하여 개별 결재 요청을 조회할 수 있도록 했습니다.

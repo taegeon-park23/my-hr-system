@@ -2,9 +2,10 @@ package com.hr.modules.approval.event;
 
 import com.hr.common.event.ApprovalRequestedEvent;
 import com.hr.modules.approval.domain.ApprovalRequest;
-import com.hr.modules.approval.domain.ApprovalStep;
+// import com.hr.modules.approval.domain.ApprovalStep; // Removed
 import com.hr.modules.approval.repository.ApprovalRequestRepository;
-import com.hr.modules.approval.repository.ApprovalStepRepository;
+// import com.hr.modules.approval.repository.ApprovalStepRepository; // Removed
+import com.hr.modules.approval.service.ApprovalService; // Added
 import com.hr.modules.user.api.UserModuleApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class ApprovalEventListener {
 
     private final UserModuleApi userModuleApi;
-    private final ApprovalStepRepository approvalStepRepository;
+    private final ApprovalService approvalService;
+    // private final ApprovalStepRepository approvalStepRepository; // Removed
     private final ApprovalRequestRepository approvalRequestRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -32,8 +34,8 @@ public class ApprovalEventListener {
             ApprovalRequest request = approvalRequestRepository.findById(event.getApprovalId())
                     .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + event.getApprovalId()));
 
-            ApprovalStep step = new ApprovalStep(request, managerId, 1);
-            approvalStepRepository.save(step);
+            // Delegate to Service with REQUIRES_NEW transaction to ensure persistence in AFTER_COMMIT phase
+            approvalService.createInitialApprovalStep(request.getId(), managerId);
             
             log.info("Created ApprovalStep for Request: {} assigned to Approver: {}", request.getId(), managerId);
 

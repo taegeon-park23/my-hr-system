@@ -17,7 +17,7 @@ public class MailService {
     private final JavaMailSender mailSender;
     private final NotificationLogRepository logRepository;
 
-    @Transactional
+    // @Transactional - Removed to prevent rollback on email failure
     public void sendEmail(Long companyId, String to, String subject, String text, String eventType, Long resourceId) {
         NotificationLog.NotificationLogBuilder logBuilder = NotificationLog.builder()
                 .companyId(companyId)

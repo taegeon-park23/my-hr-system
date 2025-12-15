@@ -15,6 +15,7 @@ public class ApprovalService implements ApprovalModuleApi {
 
 
     private final ApprovalRequestRepository approvalRepository;
+    private final com.hr.modules.approval.repository.ApprovalStepRepository approvalStepRepository;
     private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -46,5 +47,14 @@ public class ApprovalService implements ApprovalModuleApi {
     public ApprovalRequest getApprovalRequest(Long id) {
         return approvalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + id));
+    }
+
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    public void createInitialApprovalStep(Long requestId, Long approverId) {
+        ApprovalRequest request = approvalRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + requestId));
+
+        com.hr.modules.approval.domain.ApprovalStep step = new com.hr.modules.approval.domain.ApprovalStep(request, approverId, 1);
+        approvalStepRepository.save(step);
     }
 }

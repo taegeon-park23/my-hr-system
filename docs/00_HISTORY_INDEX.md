@@ -259,3 +259,10 @@ This document tracks the relationship between planning documents and their execu
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/bugfix_approval_visibility_report.md`
+
+## Level 37.1: Fix Vacation Company ID Bug
+**Plan:** `N/A (Hotfix)`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/fix_vacation_company_id_report.md`
+
