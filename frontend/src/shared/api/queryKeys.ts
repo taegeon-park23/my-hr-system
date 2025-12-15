@@ -28,7 +28,7 @@ export const queryKeys = {
     },
     evaluation: {
         all: ['evaluation'] as const,
-        cycles: '/evaluations/cycles',
+        cycles: (companyId: number) => `/admin/evaluations/cycles?companyId=${companyId}`,
         my: (userId: number) => `/evaluations/my?userId=${userId}`,
         cycleDetail: (id: number) => `/evaluations/cycles/${id}`,
     },

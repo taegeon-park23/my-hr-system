@@ -285,3 +285,10 @@ This document tracks the relationship between planning documents and their execu
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/frontend_data_fetching_refactor_report.md`
+
+## Level 41: Evaluation API Path Fix (Frontend)
+**Plan:** `N/A (Hotfix)`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/fix_evaluation_api_path_report.md`
+

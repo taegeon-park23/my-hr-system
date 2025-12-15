@@ -8,7 +8,7 @@ import { CreateCycleRequest, EvaluationCycle, EvaluationRecord } from "../model/
 
 export function useEvaluationCycles(companyId: number | undefined) {
     const { data, error, mutate, isLoading } = useSWR<EvaluationCycle[]>(
-        companyId ? queryKeys.evaluation.cycles : null, // Todo: Company filter handled by backend or query param? Assuming endpoint handles it or we add it to key factory later
+        companyId ? queryKeys.evaluation.cycles(companyId) : null,
         fetcher
     );
 
