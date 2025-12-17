@@ -29,6 +29,9 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         
+        // [NEW] ArchUnit Architecture Testing
+        testImplementation 'com.tngtech.archunit:archunit-junit5:1.0.1'
+        
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
     }
