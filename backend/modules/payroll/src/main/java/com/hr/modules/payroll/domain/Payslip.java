@@ -58,4 +58,10 @@ public class Payslip {
         items.add(item);
         item.setPayslip(this);
     }
+
+    public void updateCalculatedAmounts(BigDecimal totalAllowance, BigDecimal totalDeduction, BigDecimal netAmount) {
+        this.totalAllowance = totalAllowance;
+        this.totalDeduction = totalDeduction;
+        this.netAmount = netAmount;
+    }
 }

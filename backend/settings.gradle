@@ -13,5 +13,6 @@ include 'modules:payroll'
 include 'modules:evaluation'
 include 'modules:asset'
 include 'modules:notification'
+include 'modules:recruitment'
 include 'app'
 

@@ -57,4 +57,35 @@ public class ApprovalService implements ApprovalModuleApi {
         com.hr.modules.approval.domain.ApprovalStep step = new com.hr.modules.approval.domain.ApprovalStep(request, approverId, 1);
         approvalStepRepository.save(step);
     }
+    
+    @Transactional
+    public void approveStep(Long stepId) {
+        com.hr.modules.approval.domain.ApprovalStep step = approvalStepRepository.findById(stepId)
+                .orElseThrow(() -> new IllegalArgumentException("Approval Step not found: " + stepId));
+                
+        step.approve();
+        
+        // Check if request needs update (MVP: if step 1 approved -> request approved)
+        // In real logic, we check if all steps are done.
+        ApprovalRequest request = step.getRequest();
+        request.setStatus("APPROVED"); // Simple completion for MVP
+        
+        eventPublisher.publishEvent(new com.hr.common.event.ApprovalCompletedEvent(
+            request.getCompanyId(),
+            request.getId(),
+            request.getRequesterUserId(),
+            request.getResourceType()
+        ));
+    }
+    
+    @Transactional
+    public void rejectStep(Long stepId) {
+        com.hr.modules.approval.domain.ApprovalStep step = approvalStepRepository.findById(stepId)
+                .orElseThrow(() -> new IllegalArgumentException("Approval Step not found: " + stepId));
+                
+        step.reject();
+        
+        ApprovalRequest request = step.getRequest();
+        request.setStatus("REJECTED");
+    }
 }

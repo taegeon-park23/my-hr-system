@@ -297,3 +297,10 @@ This document tracks the relationship between planning documents and their execu
 **Status:** ✅ Completed
 **Execution Reports:**
 - `done/devops_devcontainer_setup_report.md`
+
+## Level 43: Core Logic Remediation & Feature Completion (Backend)
+**Plan:** `plan/backend_core_logic_remediation_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/backend_core_logic_remediation_report.md`
+

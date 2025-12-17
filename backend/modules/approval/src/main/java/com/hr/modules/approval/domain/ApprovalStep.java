@@ -37,5 +37,13 @@ public class ApprovalStep {
         this.approverId = approverId;
         this.stepOrder = stepOrder;
     }
+
+    public void approve() {
+        this.status = ApprovalStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = ApprovalStatus.REJECTED;
+    }
 }
 
