@@ -68,6 +68,17 @@ services:
     depends_on:
       - hr-backend-dev
 
+  # 6. Workspace (DevContainer Reference)
+  workspace:
+    image: gradle:8.5-jdk17
+    container_name: hr-workspace
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - gradle_cache:/home/gradle/.gradle
+    command: sleep infinity
+    restart: always
+
 volumes:
   gradle_cache:
 

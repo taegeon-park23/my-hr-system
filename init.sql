@@ -46,12 +46,12 @@ ON DUPLICATE KEY UPDATE name=name;
 
 -- Samsung Admin (Tester)
 INSERT INTO users (company_id, email, password_hash, name, role) 
-VALUES (2, 'admin@samsung.com', '$2b$12$OFTye8u1rwIl50YiR2vzue8siiGLZbQ/aQO2eCXbZc76i9.o1RDnO', 'Samsung Admin', 'TENANT_ADMIN')
+VALUES (2, 'admin@samsung.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVwdFEX89.DMxreRhH7yPY_a', 'Samsung Admin', 'TENANT_ADMIN')
 ON DUPLICATE KEY UPDATE name=name;
 
 -- LG Admin
 INSERT INTO users (company_id, email, password_hash, name, role) 
-VALUES (3, 'admin@lg.com', '$2b$12$OFTye8u1rwIl50YiR2vzue8siiGLZbQ/aQO2eCXbZc76i9.o1RDnO', 'LG Admin', 'TENANT_ADMIN')
+VALUES (3, 'admin@lg.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVwdFEX89.DMxreRhH7yPY_a', 'LG Admin', 'TENANT_ADMIN')
 ON DUPLICATE KEY UPDATE name=name;
 
 -- 3. Departments

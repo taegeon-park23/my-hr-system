@@ -5,7 +5,7 @@
         "../docker-compose.yml"
     ],
     // Connect to the backend service which will be configured to see the whole repo
-    "service": "hr-backend-dev",
+    "service": "workspace",
     // Workspace folder in the container (mapped to repo root in docker-compose)
     "workspaceFolder": "/app",
     "features": {
