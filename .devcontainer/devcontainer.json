@@ -1,0 +1,38 @@
+{
+    "name": "HR System Integrated Dev Env",
+    // Reuse existing docker-compose file
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    // Connect to the backend service which will be configured to see the whole repo
+    "service": "hr-backend-dev",
+    // Workspace folder in the container (mapped to repo root in docker-compose)
+    "workspaceFolder": "/app",
+    "features": {
+        // Install Node.js to allow frontend development in the backend container
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "18"
+        },
+        // Ensure Java is available (though gradle image has it, this ensures vscode integration)
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "17",
+            "installGradle": true,
+            "installMaven": false
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "gabrielbb.vscode-lombok",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "mhutchie.git-graph"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    "remoteUser": "root"
+}

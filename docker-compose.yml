@@ -38,9 +38,9 @@ services:
   hr-backend-dev:
     image: gradle:8.5-jdk17
     container_name: hr-backend-dev
-    working_dir: /app
+    working_dir: /app/backend
     volumes:
-      - ./backend:/app
+      - ./:/app
       - gradle_cache:/home/gradle/.gradle
     ports:
       - "8080:8080"
