@@ -23,7 +23,7 @@ public class ApprovalController {
     public ApiResponse<List<ApprovalRequest>> getMyRequests(
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
-        Long companyId = user.getCompanyId();
+        Long companyId = Long.parseLong(user.getCompanyId());
         Long requesterId = user.getId();
         return ApiResponse.success(approvalRepository.findByCompanyIdAndRequesterUserId(companyId, requesterId));
     }
@@ -32,7 +32,7 @@ public class ApprovalController {
     public ApiResponse<List<ApprovalRequest>> getPendingRequests(
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
-        Long companyId = user.getCompanyId();
+        Long companyId = Long.parseLong(user.getCompanyId());
         Long userId = user.getId();
         return ApiResponse.success(approvalRepository.findPendingRequests(companyId, userId));
     }
@@ -43,7 +43,7 @@ public class ApprovalController {
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
         com.hr.modules.approval.api.dto.ApprovalRequestCommand command = com.hr.modules.approval.api.dto.ApprovalRequestCommand.builder()
-                .companyId(user.getCompanyId())
+                .companyId(Long.parseLong(user.getCompanyId()))
                 .requesterId(user.getId())
                 // Use defaults if null
                 .resourceType(request.getResourceType() != null ? request.getResourceType() : "GENERAL")

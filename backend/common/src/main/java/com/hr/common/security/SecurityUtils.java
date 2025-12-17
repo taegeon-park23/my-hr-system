@@ -10,7 +10,7 @@ public class SecurityUtils {
     }
 
     public static String getCurrentCompanyId() {
-        return String.valueOf(getUserPrincipal().getCompanyId());
+        return getUserPrincipal().getCompanyId();
     }
 
     public static String getCurrentTenantId() {

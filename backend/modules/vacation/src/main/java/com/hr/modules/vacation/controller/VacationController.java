@@ -23,7 +23,7 @@ public class VacationController {
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
         return ApiResponse.success(
-                VacationBalanceResponse.from(vacationService.getBalance(user.getCompanyId(), user.getId(), year))
+                VacationBalanceResponse.from(vacationService.getBalance(Long.parseLong(user.getCompanyId()), user.getId(), year))
         );
     }
 
@@ -47,7 +47,7 @@ public class VacationController {
         return ApiResponse.success(
                 VacationRequestResponse.from(
                         vacationService.requestVacation(
-                                user.getCompanyId(), 
+                                Long.parseLong(user.getCompanyId()), 
                                 user.getId(), 
                                 dto.getType(), 
                                 dto.getStartDate(), 

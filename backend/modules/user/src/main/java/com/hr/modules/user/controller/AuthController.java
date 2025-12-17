@@ -34,7 +34,7 @@ public class AuthController {
                 user.getId(),
                 user.getEmail(),
                 user.getRole(),
-                user.getCompanyId()
+                String.valueOf(user.getCompanyId())
         );
 
         return ApiResponse.success(LoginResponse.builder()

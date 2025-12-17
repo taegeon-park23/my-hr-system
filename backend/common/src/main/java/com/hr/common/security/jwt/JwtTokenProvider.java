@@ -31,7 +31,7 @@ public class JwtTokenProvider {
         this.tokenValidityInMilliseconds = tokenValidityInMilliseconds;
     }
 
-    public String createToken(Long userId, String email, String role, Long companyId) {
+    public String createToken(Long userId, String email, String role, String companyId) {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
@@ -56,7 +56,8 @@ public class JwtTokenProvider {
         Long userId = Long.parseLong(claims.getSubject());
         String email = claims.get("email", String.class);
         String role = claims.get("role", String.class);
-        Long companyId = claims.get("companyId", Long.class);
+        Object companyIdObj = claims.get("companyId");
+        String companyId = companyIdObj != null ? String.valueOf(companyIdObj) : null;
 
         Collection<? extends GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority("ROLE_" + role));

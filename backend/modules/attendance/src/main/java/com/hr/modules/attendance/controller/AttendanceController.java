@@ -32,7 +32,7 @@ public class AttendanceController {
     @PostMapping("/check-in")
     public ApiResponse<String> checkIn(@AuthenticationPrincipal UserPrincipal user, 
                                        @RequestBody AttendanceRequest request) {
-        attendanceService.checkIn(user.getId(), user.getCompanyId(), request);
+        attendanceService.checkIn(user.getId(), Long.parseLong(user.getCompanyId()), request);
         return ApiResponse.success("Check-in successful");
     }
 

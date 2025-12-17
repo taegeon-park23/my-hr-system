@@ -11,7 +11,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class UserPrincipal implements UserDetails {
     private final Long id;
-    private final Long companyId;
+    private final String companyId;
     private final String email;
     private final String role;
     private final Collection<? extends GrantedAuthority> authorities;
