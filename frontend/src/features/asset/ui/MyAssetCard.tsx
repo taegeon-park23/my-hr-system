@@ -18,7 +18,7 @@ export function MyAssetCard({ asset }: Props) {
                 </div>
                 <div className="text-right">
                     <span className="text-xs text-gray-400">지급일</span>
-                    <p className="text-sm text-gray-700">{asset.updatedAt.split("T")[0]}</p>
+                    <p className="text-sm text-gray-700">{asset.updatedAt?.split("T")[0] || "-"}</p>
                 </div>
             </div>
 

@@ -60,9 +60,35 @@ export const LoginForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
             />
 
+            <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                    <input
+                        id="remember-me"
+                        name="remember-me"
+                        type="checkbox"
+                        className="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded"
+                    />
+                    <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700 font-medium">
+                        Remember me
+                    </label>
+                </div>
+
+                <div className="text-sm">
+                    <a href="#" className="font-medium text-primary hover:text-primary-dark transition-colors"
+                        onClick={(e) => { e.preventDefault(); alert('Password recovery service is not available yet. Please contact admin.'); }}>
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
             {error && (
-                <div className="text-sm text-danger bg-danger-bg p-3 rounded-md" role="alert">
-                    {error}
+                <div className="text-sm text-danger bg-rose-50 border border-rose-200 p-3 rounded-md animate-in fade-in slide-in-from-top-1" role="alert">
+                    <div className="flex items-center">
+                        <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {error}
+                    </div>
                 </div>
             )}
 

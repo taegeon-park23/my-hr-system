@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { createEvaluationCycle } from "../api/evaluationApi";
 import { CreateCycleRequest, EvaluationType } from "../model/types";
 import { Button } from "@/shared/ui/Button";
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function CreateCycleModal({ companyId, isOpen, onClose, onSuccess }: Props) {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateCycleRequest>();
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<CreateCycleRequest>();
     const [loading, setLoading] = useState(false);
 
     const onSubmit = async (data: CreateCycleRequest) => {
@@ -54,10 +54,19 @@ export function CreateCycleModal({ companyId, isOpen, onClose, onSuccess }: Prop
                         <Input type="number" {...register("year", { required: true })} defaultValue={APP_CONFIG.CURRENT_YEAR} />
                     </div>
                     <div className="flex-1">
-                        <Select
-                            label="유형"
-                            options={evaluationTypeOptions}
-                            {...register("type")}
+                        <Controller
+                            control={control}
+                            name="type"
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <Select
+                                    label="유형"
+                                    options={evaluationTypeOptions}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    error={errors.type ? "필수 선택입니다." : undefined}
+                                />
+                            )}
                         />
                     </div>
                 </div>

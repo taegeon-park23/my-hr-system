@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { AssetCategory, CreateAssetRequest, createAsset } from "../api/assetApi";
 import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function AssetCreateModal({ companyId, isOpen, onClose, onSuccess }: Props) {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateAssetRequest>();
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<CreateAssetRequest>();
     const [loading, setLoading] = useState(false);
 
     const onSubmit = async (data: CreateAssetRequest) => {
@@ -46,10 +46,19 @@ export function AssetCreateModal({ companyId, isOpen, onClose, onSuccess }: Prop
                     {errors.modelName && <span className="text-red-500 text-xs">필수 입력입니다.</span>}
                 </div>
 
-                <Select
-                    label="카테고리"
-                    options={categoryOptions}
-                    {...register("category", { required: true })}
+                <Controller
+                    control={control}
+                    name="category"
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                        <Select
+                            label="카테고리"
+                            options={categoryOptions}
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={errors.category ? "필수 선택입니다." : undefined}
+                        />
+                    )}
                 />
 
                 <div>

@@ -7,6 +7,7 @@ export interface ApprovalRequest {
     status: 'PENDING' | 'APPROVED' | 'REJECTED';
     createdAt: string;
     type: 'VACATION' | 'EXPENSE' | 'EQUIPMENT';
+    steps?: ApprovalStep[];
 }
 
 export interface ApprovalStep {
@@ -14,5 +15,7 @@ export interface ApprovalStep {
     stepOrder: number;
     approverId: number;
     approverName: string;
-    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    status: 'WAITING' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELED';
+    comment?: string;
+    processedAt?: string;
 }

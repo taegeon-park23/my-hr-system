@@ -4,6 +4,7 @@ import { useMyVacationBalance } from '@/features/vacation/api/vacationApi';
 import { useTodoEvaluations } from '@/features/evaluation/api/evaluationApi';
 import { useMyLatestPayslip } from '@/features/payroll/api/payrollApi';
 import { useMyTeamCount } from '@/features/org/api/orgApi';
+import { useDashboardSummary } from '@/features/dashboard/api/dashboardApi';
 
 export const useDashboardStats = () => {
     const user = useAuthStore((state) => state.user);
@@ -13,6 +14,10 @@ export const useDashboardStats = () => {
     const { todos, isLoading: isTodosLoading } = useTodoEvaluations(user?.id);
     const { payslip, isLoading: isPayslipLoading } = useMyLatestPayslip(user?.id);
     const { count: teamCount, isLoading: isTeamLoading } = useMyTeamCount(user?.id);
+
+    // Summary data for managers/admins
+    const isManager = user?.role !== 'USER';
+    const { summary, isLoading: isSummaryLoading } = useDashboardSummary();
 
     return {
         vacation: {
@@ -30,6 +35,11 @@ export const useDashboardStats = () => {
         team: {
             count: teamCount || 0,
             isLoading: isTeamLoading
+        },
+        summary: {
+            data: summary,
+            isLoading: isSummaryLoading && isManager,
+            show: isManager
         }
     };
 };

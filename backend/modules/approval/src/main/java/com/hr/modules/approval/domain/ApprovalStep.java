@@ -1,5 +1,6 @@
 package com.hr.modules.approval.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ public class ApprovalStep {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_id", nullable = false)
     private ApprovalRequest request;
@@ -32,7 +34,7 @@ public class ApprovalStep {
     private LocalDateTime processedAt;
 
     @Version
-    private Long version;
+    private Long version = 0L;
 
     public enum ApprovalStatus {
         WAITING, PENDING, APPROVED, REJECTED, CANCELED

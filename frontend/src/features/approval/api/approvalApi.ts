@@ -47,3 +47,11 @@ export const createApprovalRequest = async (data: Partial<ApprovalRequest>): Pro
     await client.post('/approval/request', data);
 };
 
+export const approveStep = async (stepId: number, comment?: string): Promise<void> => {
+    await client.post(`/approval/steps/${stepId}/approve`, { comment });
+};
+
+export const rejectStep = async (stepId: number, comment?: string): Promise<void> => {
+    await client.post(`/approval/steps/${stepId}/reject`, { comment });
+};
+

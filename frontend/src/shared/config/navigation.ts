@@ -18,5 +18,6 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     { name: 'My Assets', href: '/assets/my', icon: 'DevicePhoneMobileIcon' },
     { name: 'Evaluations (Admin)', href: '/admin/evaluations/cycles', icon: 'ChartBarSquareIcon', requiredRole: 'TENANT_ADMIN' },
     { name: 'Evaluations', href: '/evaluations/dashboard', icon: 'ChartBarIcon' },
+    { name: 'Tenants', href: '/admin/tenants', icon: 'BuildingOfficeIcon', requiredRole: 'SUPER_ADMIN' },
     { name: 'Settings', href: '/dashboard/settings', icon: 'Cog6ToothIcon' },
 ];

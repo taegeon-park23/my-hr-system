@@ -2,20 +2,60 @@
 
 import React from 'react';
 
-import { useApprovalDetail } from '@/features/approval/api/approvalApi';
+import { useApprovalDetail, approveStep, rejectStep } from '@/features/approval/api/approvalApi';
 import { Button } from '@/shared/ui/Button';
 import { useRouter, useParams } from 'next/navigation';
 import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
+import { ApprovalTimeline } from '@/features/approval/ui/ApprovalTimeline';
 
 export default function ApprovalDetailPage() {
     const params = useParams();
     const router = useRouter();
     const id = Number(params?.id);
+    const { user } = useAuthStore();
+    const [isProcessing, setIsProcessing] = React.useState(false);
+    const [comment, setComment] = React.useState('');
 
-    const { data: request, isLoading, isError } = useApprovalDetail(id);
+    const { data: request, isLoading, isError, mutate } = useApprovalDetail(id);
+
+    // Find the current active step that the current user can approve
+    const currentStep = request?.steps?.find(step =>
+        step.status === 'PENDING' && step.approverId === user?.id
+    );
+
+    const handleApprove = async () => {
+        if (!currentStep) return;
+        setIsProcessing(true);
+        try {
+            await approveStep(currentStep.id, comment);
+            setComment('');
+            await mutate();
+        } catch (error) {
+            console.error('Failed to approve:', error);
+            alert('Failed to approve request');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleReject = async () => {
+        if (!currentStep) return;
+        setIsProcessing(true);
+        try {
+            await rejectStep(currentStep.id, comment);
+            setComment('');
+            await mutate();
+        } catch (error) {
+            console.error('Failed to reject:', error);
+            alert('Failed to reject request');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     if (isLoading) {
-        return <div className="p-8">Loading approval details...</div>;
+        return <div className="p-8 text-center text-gray-500">Loading approval details...</div>;
     }
 
     if (isError) {
@@ -31,25 +71,55 @@ export default function ApprovalDetailPage() {
     }
 
     if (!request) {
-        return <div className="p-8">Request not found.</div>;
+        return <div className="p-8 text-center text-gray-500">Request not found.</div>;
     }
 
     return (
-        <div className="space-y-6">
-            <div className="md:flex md:items-center md:justify-between">
+        <div className="max-w-4xl mx-auto space-y-6 p-6">
+            <div className="md:flex md:items-center md:justify-between border-b border-gray-200 pb-6">
                 <div className="flex-1 min-w-0">
                     <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
                         {request.title}
                     </h2>
                     <p className="mt-1 text-sm text-gray-500">
-                        Requested by {request.requesterName} on {new Date(request.createdAt).toLocaleDateString()}
+                        Requested by <span className="font-semibold text-gray-700">{request.requesterName}</span> on {new Date(request.createdAt).toLocaleDateString()}
                     </p>
                 </div>
-                <div className="mt-4 flex md:mt-0 md:ml-4 space-x-2">
-                    <Button variant="secondary" onClick={() => router.back()}>
-                        Back
-                    </Button>
-                    {/* Approve/Reject buttons would go here */}
+                <div className="mt-4 flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-3">
+                    {currentStep && (
+                        <div className="flex-1 min-w-0 md:mr-4">
+                            <textarea
+                                rows={2}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-3 bg-gray-50 text-gray-900 border"
+                                placeholder="Add a comment (optional)..."
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                            />
+                        </div>
+                    )}
+                    <div className="flex flex-shrink-0 space-x-3">
+                        <Button variant="secondary" onClick={() => router.back()}>
+                            Back
+                        </Button>
+                        {currentStep && (
+                            <>
+                                <Button
+                                    variant="danger"
+                                    onClick={handleReject}
+                                    isLoading={isProcessing}
+                                >
+                                    Reject
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={handleApprove}
+                                    isLoading={isProcessing}
+                                >
+                                    Approve
+                                </Button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -76,6 +146,12 @@ export default function ApprovalDetailPage() {
                     </dl>
                 </div>
             </div>
+
+            {request.steps && request.steps.length > 0 && (
+                <div className="bg-white shadow sm:rounded-lg p-6">
+                    <ApprovalTimeline steps={request.steps} />
+                </div>
+            )}
         </div>
     );
 }

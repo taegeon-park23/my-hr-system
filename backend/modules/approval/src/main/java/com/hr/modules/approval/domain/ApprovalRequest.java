@@ -39,7 +39,7 @@ public class ApprovalRequest {
     private List<ApprovalStep> steps = new ArrayList<>();
 
     @Version
-    private Long version;
+    private Long version = 0L;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
