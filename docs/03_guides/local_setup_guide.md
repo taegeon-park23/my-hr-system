@@ -1,66 +1,90 @@
 # 로컬 개발 환경 구성 및 실행 가이드
 
-이 문서는 "Next-Gen HR SaaS System"을 로컬 환경에서 실행하기 위한 단계별 가이드입니다.
+이 문서는 "Next-Gen HR SaaS System"을 개발하고 실행하기 위한 가이드입니다.
+개발 환경은 **DevContainer(권장)** 를 사용하는 방법과 **로컬 머신(Manual)** 에 직접 구성하는 방법 두 가지를 지원합니다.
 
-## 1. 사전 조건 (Prerequisites)
+## 1. 개발 환경 선택
 
-프로젝트를 실행하기 위해 다음 도구들이 설치되어 있어야 합니다.
+### Option A: VS Code DevContainer (권장)
+VS Code와 Docker가 설치되어 있다면, 별도의 언어 런타임(Java, Node.js) 설치 없이 즉시 개발 환경을 구성할 수 있습니다. `.devcontainer/devcontainer.json` 설정을 따릅니다.
 
-*   **Java 17+**: 백엔드 애플리케이션 실행을 위해 필요합니다.
-    *   확인: `java -version`
-*   **Node.js 18+ (LTS)**: 프론트엔드(Next.js) 실행을 위해 필요합니다.
-    *   확인: `node -v`
-*   **Docker & Docker Compose**: 데이터베이스(MySQL) 및 인프라 실행을 위해 필요합니다.
-    *   확인: `docker -v`, `docker-compose -v`
+1.  VS Code에서 프로젝트 폴더 열기
+2.  "Reopen in Container" 알림 클릭 (또는 F1 -> `Dev Containers: Reopen in Container` 실행)
+3.  컨테이너 빌드 및 초기화 완료 대기
+4.  자동으로 구성된 터미널에서 개발 시작
 
-## 2. 인프라 실행 (Infrastructure)
-
-프로젝트 루트 디렉토리(`my-hr-system`)에서 다음 명령어를 실행하여 데이터베이스와 필요한 서비스들을 실행합니다.
+### Option B: Docker Compose (Full Stack)
+로컬에 아무것도 설치하고 싶지 않고 실행만 확인하고 싶을 때 유용합니다.
 
 ```bash
 docker-compose up -d
 ```
+이 명령은 DB, Redis뿐만 아니라 Backend, Frontend 개발 서버까지 모두 Docker 컨테이너로 실행합니다.
+*   Frontend: http://localhost:3000
+*   Backend API: http://localhost:8080
+*   Storybook: http://localhost:6006
 
-이 명령어는 다음 컨테이너들을 시작합니다:
-*   **hr-db**: MySQL 8.0 (Port: 3306, DB: `hr_system`)
-*   **hr-redis**: Redis (Port: 6379)
-*   **hr-mail**: MailHog (SMTP: 1025, Web UI: 8025)
+---
 
-## 3. 백엔드 실행 (Backend)
+## 2. 수동 설정 (Manual Setup)
 
-`backend` 디렉토리로 이동하여 Spring Boot 애플리케이션을 실행합니다.
+로컬 머신에서 직접 소스 코드를 실행하려면 아래 단계를 따르십시오.
 
-**Windows:**
-```powershell
-cd backend
-.\gradlew bootRun
+### 2.1 사전 조건 (Prerequisites)
+
+*   **Java 17+**: 백엔드 실행 (Gradle 8.5 호환)
+    *   `java -version`
+*   **Node.js 18+ (or 20 LTS)**: 프론트엔드 실행 (`docker-compose`는 Node 20 사용 중)
+    *   `node -v`
+*   **Docker & Docker Compose**: 인프라 실행 필수
+    *   `docker -v`
+
+### 2.2 인프라 실행 (Infrastructure Only)
+
+백엔드와 프론트엔드를 로컬에서 직접 실행할 경우, DB와 Redis 등 인프라 서비스만 Docker로 띄워야 포트 충돌이 발생하지 않습니다.
+
+```bash
+# 앱 컨테이너(hr-backend-dev, hr-frontend-dev)를 제외하고 인프라만 실행
+docker-compose up -d hr-db hr-redis hr-mail
 ```
+
+*   **MySQL**: 3306 (Schema: `hr_system`)
+*   **Redis**: 6379
+*   **MailHog**: 8025 (Web UI), 1025 (SMTP)
+
+### 2.3 백엔드 실행 (Backend)
+
+`backend` 디렉토리에서 Gradle을 통해 실행합니다.
 
 **Mac/Linux:**
 ```bash
 cd backend
-./gradlew bootRun
+./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
-*   서버가 정상적으로 실행되면 `http://localhost:8080/swagger-ui.html`에서 API 문서를 확인할 수 있습니다.
+**Windows:**
+```powershell
+cd backend
+.\gradlew bootRun --args='--spring.profiles.active=dev'
+```
 
-## 4. 프론트엔드 실행 (Frontend)
+*   API Docs: `http://localhost:8080/swagger-ui.html`
 
-`frontend` 디렉토리로 이동하여 Next.js 애플리케이션을 실행합니다.
+### 2.4 프론트엔드 실행 (Frontend)
+
+`frontend` 디렉토리에서 실행합니다.
 
 ```bash
 cd frontend
-# 의존성 설치 (최초 1회)
 npm install
-
-# 개발 서버 실행
 npm run dev
 ```
 
-*   서버가 실행되면 브라우저에서 `http://localhost:3000`으로 접속하여 시스템을 사용할 수 있습니다.
+*   Web App: `http://localhost:3000`
 
-## 5. 전체 시스템 테스트 (Verification)
+---
 
-1.  **DB 연결 확인**: 백엔드 로그에 DB 연결 성공 메시지가 출력되는지 확인합니다.
-2.  **API 확인**: Swagger ui(`http://localhost:8080/swagger-ui.html`)에 접속하여 Auth, Org 등의 API가 보이는지 확인합니다.
-3.  **웹 접속**: `http://localhost:3000`에 접속하여 로그인 페이지가 로드되는지 확인합니다.
+## 3. 문제 해결 (Troubleshooting)
+
+*   **Port Conflict**: "Bind for 0.0.0.0:3306 failed" 오류 발생 시 로컬의 MySQL 서비스를 중지하거나 `docker-compose.yml`에서 포트 매핑을 변경하세요.
+*   **DB Connection**: 백엔드 실행 시 DB 연결 오류가 나면 `docker-compose ps`로 `hr-db` 상태가 `Up`인지 확인하세요. 초기 실행 시 MySQL 초기화에 시간이 걸릴 수 있습니다.
