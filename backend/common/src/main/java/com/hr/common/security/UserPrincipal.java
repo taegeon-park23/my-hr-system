@@ -14,6 +14,7 @@ public class UserPrincipal implements UserDetails {
     private final String companyId;
     private final String email;
     private final String role;
+    private final boolean impersonated;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Override

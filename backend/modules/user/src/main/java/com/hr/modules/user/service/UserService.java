@@ -15,6 +15,49 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserModuleApi {
 
     private final UserRepository userRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final com.hr.common.security.jwt.JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    @Transactional
+    public Long createInitialAdmin(Long companyId, String email, String name, String password) {
+        String encodedPassword = passwordEncoder.encode(password);
+        User admin = new User(companyId, email, encodedPassword, name, "TENANT_ADMIN");
+        return userRepository.save(admin).getId();
+    }
+
+    public com.hr.modules.user.dto.LoginResponse login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
+
+        String token = jwtTokenProvider.createToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole(),
+                String.valueOf(user.getCompanyId()),
+                false
+        );
+
+        return com.hr.modules.user.dto.LoginResponse.builder()
+                .accessToken(token)
+                .user(com.hr.modules.user.dto.UserDto.from(user))
+                .build();
+    }
+
+    public long getTeamCount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (user.getDeptId() == null) {
+            return 0L;
+        }
+
+        return userRepository.countByDeptId(user.getDeptId());
+    }
 
     @Override
     public UserInfoDto getUserInfo(Long userId) {
@@ -27,13 +70,13 @@ public class UserService implements UserModuleApi {
                 .deptId(user.getDeptId())
                 .email(user.getEmail())
                 .name(user.getName())
-                .role(user.getRole().toString()) // Assuming Role is Enum or String
+                .role(user.getRole())
                 .build();
     }
 
     @Override
     public java.util.List<UserInfoDto> getUsersByCompanyId(String companyId) {
-        Long compId = Long.parseLong(companyId); // Type conversion
+        Long compId = Long.parseLong(companyId);
         return userRepository.findByCompanyId(compId).stream()
                 .map(user -> UserInfoDto.builder()
                         .userId(user.getId())

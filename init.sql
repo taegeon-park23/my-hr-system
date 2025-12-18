@@ -132,6 +132,7 @@ CREATE TABLE IF NOT EXISTS approval_requests (
     title VARCHAR(255) NOT NULL,
     current_step_order INT DEFAULT 1,
     status VARCHAR(20) DEFAULT 'PENDING',
+    version BIGINT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (company_id) REFERENCES companies(id)
@@ -161,7 +162,10 @@ CREATE TABLE IF NOT EXISTS approval_steps (
     request_id BIGINT NOT NULL,
     step_order INT NOT NULL,
     approver_id BIGINT NOT NULL,
-    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    comment TEXT NULL,
+    processed_at DATETIME NULL,
+    version BIGINT DEFAULT 0,
     CONSTRAINT fk_approval_steps_request FOREIGN KEY (request_id) REFERENCES approval_requests(id)
 );
 

@@ -16,6 +16,13 @@ public class OrgService implements OrgModuleApi {
     private final DepartmentRepository departmentRepository;
 
     @Override
+    @Transactional
+    public Long createRootDepartment(Long companyId, String name) {
+        com.hr.modules.org.domain.Department root = new com.hr.modules.org.domain.Department(companyId, null, name, 0);
+        return departmentRepository.save(root).getId();
+    }
+
+    @Override
     public List<Long> getSubDeptIds(Long deptId) {
         if (deptId == null) return Collections.emptyList();
         // MVP: Just return empty or implement simple logic if Department entity has path

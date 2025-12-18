@@ -1,13 +1,10 @@
 package com.hr.modules.approval.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "approval_steps")
-@Getter
-@NoArgsConstructor
 public class ApprovalStep {
 
     @Id
@@ -26,24 +23,59 @@ public class ApprovalStep {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ApprovalStatus status = ApprovalStatus.PENDING;
+    private ApprovalStatus status = ApprovalStatus.WAITING;
+
+    @Column(name = "comment")
+    private String comment;
+
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
+
+    @Version
+    private Long version;
 
     public enum ApprovalStatus {
-        PENDING, APPROVED, REJECTED
+        WAITING, PENDING, APPROVED, REJECTED, CANCELED
     }
+
+    protected ApprovalStep() {}
 
     public ApprovalStep(ApprovalRequest request, Long approverId, int stepOrder) {
         this.request = request;
         this.approverId = approverId;
         this.stepOrder = stepOrder;
+        this.status = (stepOrder == 1) ? ApprovalStatus.PENDING : ApprovalStatus.WAITING;
     }
 
-    public void approve() {
+    public void activate() {
+        if (this.status == ApprovalStatus.WAITING) {
+            this.status = ApprovalStatus.PENDING;
+        }
+    }
+
+    public void approve(String comment) {
         this.status = ApprovalStatus.APPROVED;
+        this.comment = comment;
+        this.processedAt = LocalDateTime.now();
     }
 
-    public void reject() {
+    public void reject(String comment) {
         this.status = ApprovalStatus.REJECTED;
+        this.comment = comment;
+        this.processedAt = LocalDateTime.now();
     }
-}
 
+    public void cancel() {
+        this.status = ApprovalStatus.CANCELED;
+    }
+
+    // Manual Getters
+    public Long getId() { return id; }
+    public ApprovalRequest getRequest() { return request; }
+    public Long getApproverId() { return approverId; }
+    public int getStepOrder() { return stepOrder; }
+    public ApprovalStatus getStatus() { return status; }
+    public String getComment() { return comment; }
+    public LocalDateTime getProcessedAt() { return processedAt; }
+    public Long getVersion() { return version; }
+}

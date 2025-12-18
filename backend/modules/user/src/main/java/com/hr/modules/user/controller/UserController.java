@@ -11,18 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final com.hr.modules.user.service.UserService userService;
 
     @GetMapping("/team-count")
     public ApiResponse<Long> getTeamCount(@RequestParam Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        if (user.getDeptId() == null) {
-            return ApiResponse.success(0L);
-        }
-
-        long count = userRepository.countByDeptId(user.getDeptId());
-        return ApiResponse.success(count);
+        return ApiResponse.success(userService.getTeamCount(userId));
     }
 }

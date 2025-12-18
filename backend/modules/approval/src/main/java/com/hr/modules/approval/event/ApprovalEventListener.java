@@ -1,27 +1,26 @@
 package com.hr.modules.approval.event;
 
 import com.hr.common.event.ApprovalRequestedEvent;
-import com.hr.modules.approval.domain.ApprovalRequest;
-// import com.hr.modules.approval.domain.ApprovalStep; // Removed
-import com.hr.modules.approval.repository.ApprovalRequestRepository;
-// import com.hr.modules.approval.repository.ApprovalStepRepository; // Removed
-import com.hr.modules.approval.service.ApprovalService; // Added
+import com.hr.modules.approval.service.ApprovalService;
 import com.hr.modules.user.api.UserModuleApi;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
-@RequiredArgsConstructor
-@Slf4j
 public class ApprovalEventListener {
+
+    private static final Logger log = LoggerFactory.getLogger(ApprovalEventListener.class);
 
     private final UserModuleApi userModuleApi;
     private final ApprovalService approvalService;
-    // private final ApprovalStepRepository approvalStepRepository; // Removed
-    private final ApprovalRequestRepository approvalRequestRepository;
+
+    public ApprovalEventListener(UserModuleApi userModuleApi, ApprovalService approvalService) {
+        this.userModuleApi = userModuleApi;
+        this.approvalService = approvalService;
+    }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleApprovalRequested(ApprovalRequestedEvent event) {
@@ -31,17 +30,13 @@ public class ApprovalEventListener {
             Long managerId = userModuleApi.getManagerIdOfUser(event.getRequesterId());
             log.info("Resolved Manager ID: {} for Requester ID: {}", managerId, event.getRequesterId());
 
-            ApprovalRequest request = approvalRequestRepository.findById(event.getApprovalId())
-                    .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + event.getApprovalId()));
-
-            // Delegate to Service with REQUIRES_NEW transaction to ensure persistence in AFTER_COMMIT phase
-            approvalService.createInitialApprovalStep(request.getId(), managerId);
+            // Delegate to Service
+            approvalService.createInitialApprovalStep(event.getApprovalId(), managerId);
             
-            log.info("Created ApprovalStep for Request: {} assigned to Approver: {}", request.getId(), managerId);
+            log.info("Created ApprovalStep for Request: {} assigned to Approver: {}", event.getApprovalId(), managerId);
 
         } catch (Exception e) {
             log.error("Failed to create approval step for request: {}. Cause: {}", event.getApprovalId(), e.getMessage(), e);
-            // In a real system, we might want to update the request status to ERROR or retry.
         }
     }
 }

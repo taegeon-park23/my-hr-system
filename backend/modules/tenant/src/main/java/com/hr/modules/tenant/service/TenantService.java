@@ -15,6 +15,7 @@ import java.util.List;
 public class TenantService {
 
     private final TenantRepository tenantRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long createTenant(String name, String domain, String planType) {
@@ -23,7 +24,10 @@ public class TenantService {
         }
         Tenant tenant = new Tenant(name, domain, planType);
         tenantRepository.save(tenant);
-        // TODO: Publish TenantCreatedEvent here
+        
+        eventPublisher.publishEvent(new com.hr.common.event.TenantCreatedEvent(
+                tenant.getId(), tenant.getName(), "admin@" + domain));
+                
         return tenant.getId();
     }
 

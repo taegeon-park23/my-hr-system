@@ -31,7 +31,7 @@ public class JwtTokenProvider {
         this.tokenValidityInMilliseconds = tokenValidityInMilliseconds;
     }
 
-    public String createToken(Long userId, String email, String role, String companyId) {
+    public String createToken(Long userId, String email, String role, String companyId, boolean isImpersonated) {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
@@ -40,6 +40,7 @@ public class JwtTokenProvider {
                 .claim("email", email)
                 .claim("role", role)
                 .claim("companyId", companyId)
+                .claim("isImpersonated", isImpersonated)
                 .setIssuedAt(new Date(now))
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -58,11 +59,13 @@ public class JwtTokenProvider {
         String role = claims.get("role", String.class);
         Object companyIdObj = claims.get("companyId");
         String companyId = companyIdObj != null ? String.valueOf(companyIdObj) : null;
+        Boolean isImpersonated = claims.get("isImpersonated", Boolean.class);
+        if (isImpersonated == null) isImpersonated = false;
 
         Collection<? extends GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-        UserPrincipal principal = new UserPrincipal(userId, companyId, email, role, authorities);
+        UserPrincipal principal = new UserPrincipal(userId, companyId, email, role, isImpersonated, authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

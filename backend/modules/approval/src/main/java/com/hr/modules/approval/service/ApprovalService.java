@@ -3,20 +3,30 @@ package com.hr.modules.approval.service;
 import com.hr.modules.approval.api.ApprovalModuleApi;
 import com.hr.modules.approval.api.dto.ApprovalRequestCommand;
 import com.hr.modules.approval.domain.ApprovalRequest;
+import com.hr.modules.approval.domain.ApprovalStep;
 import com.hr.modules.approval.repository.ApprovalRequestRepository;
-import lombok.RequiredArgsConstructor;
+import com.hr.modules.approval.repository.ApprovalStepRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ApprovalService implements ApprovalModuleApi {
 
-
     private final ApprovalRequestRepository approvalRepository;
-    private final com.hr.modules.approval.repository.ApprovalStepRepository approvalStepRepository;
-    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+    private final ApprovalStepRepository approvalStepRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public ApprovalService(ApprovalRequestRepository approvalRepository,
+                           ApprovalStepRepository approvalStepRepository,
+                           ApplicationEventPublisher eventPublisher) {
+        this.approvalRepository = approvalRepository;
+        this.approvalStepRepository = approvalStepRepository;
+        this.eventPublisher = eventPublisher;
+    }
 
     @Override
     public Long createApproval(ApprovalRequestCommand command) {
@@ -27,7 +37,14 @@ public class ApprovalService implements ApprovalModuleApi {
         request.setResourceType(command.getResourceType());
         request.setResourceId(command.getResourceId());
         request.setTitle(command.getTitle());
-        request.setStatus("PENDING"); 
+        request.setStatus("PENDING");
+        request.setCurrentStepOrder(1);
+        
+        if (command.getApproverIds() != null) {
+            for (Long approverId : command.getApproverIds()) {
+                request.addStep(approverId);
+            }
+        }
         
         ApprovalRequest saved = approvalRepository.save(request);
         
@@ -49,27 +66,67 @@ public class ApprovalService implements ApprovalModuleApi {
                 .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + id));
     }
 
-    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createInitialApprovalStep(Long requestId, Long approverId) {
-        ApprovalRequest request = approvalRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + requestId));
-
-        com.hr.modules.approval.domain.ApprovalStep step = new com.hr.modules.approval.domain.ApprovalStep(request, approverId, 1);
-        approvalStepRepository.save(step);
+        ApprovalRequest request = getApprovalRequest(requestId);
+        request.addStep(approverId);
+        // If it's the first step, activate it
+        if (request.getSteps().size() == 1) {
+            request.getSteps().get(0).activate();
+        }
+        approvalRepository.save(request);
     }
     
-    @Transactional
-    public void approveStep(Long stepId) {
-        com.hr.modules.approval.domain.ApprovalStep step = approvalStepRepository.findById(stepId)
+    public void approveStep(Long stepId, Long approverUserId, String comment) {
+        ApprovalStep step = approvalStepRepository.findById(stepId)
                 .orElseThrow(() -> new IllegalArgumentException("Approval Step not found: " + stepId));
                 
-        step.approve();
+        if (!step.getApproverId().equals(approverUserId)) {
+            throw new IllegalStateException("You are not the approver for this step.");
+        }
         
-        // Check if request needs update (MVP: if step 1 approved -> request approved)
-        // In real logic, we check if all steps are done.
         ApprovalRequest request = step.getRequest();
-        request.setStatus("APPROVED"); // Simple completion for MVP
+        if (!request.getCurrentStepOrder().equals(step.getStepOrder())) {
+            throw new IllegalStateException("It is not your turn to approve.");
+        }
+
+        step.approve(comment);
         
+        // Find next step
+        int nextOrder = request.getCurrentStepOrder() + 1;
+        ApprovalStep nextStep = request.getSteps().stream()
+                .filter(s -> s.getStepOrder() == nextOrder)
+                .findFirst()
+                .orElse(null);
+
+        if (nextStep != null) {
+            request.setCurrentStepOrder(nextOrder);
+            nextStep.activate();
+        } else {
+            // Final approval
+            request.approve();
+            eventPublisher.publishEvent(new com.hr.common.event.ApprovalCompletedEvent(
+                request.getCompanyId(),
+                request.getId(),
+                request.getRequesterUserId(),
+                request.getResourceType()
+            ));
+        }
+    }
+    
+    public void rejectStep(Long stepId, Long approverUserId, String comment) {
+        ApprovalStep step = approvalStepRepository.findById(stepId)
+                .orElseThrow(() -> new IllegalArgumentException("Approval Step not found: " + stepId));
+                
+        if (!step.getApproverId().equals(approverUserId)) {
+            throw new IllegalStateException("You are not the approver for this step.");
+        }
+        
+        step.reject(comment);
+        
+        ApprovalRequest request = step.getRequest();
+        request.reject();
+
         eventPublisher.publishEvent(new com.hr.common.event.ApprovalCompletedEvent(
             request.getCompanyId(),
             request.getId(),
@@ -77,15 +134,12 @@ public class ApprovalService implements ApprovalModuleApi {
             request.getResourceType()
         ));
     }
-    
-    @Transactional
-    public void rejectStep(Long stepId) {
-        com.hr.modules.approval.domain.ApprovalStep step = approvalStepRepository.findById(stepId)
-                .orElseThrow(() -> new IllegalArgumentException("Approval Step not found: " + stepId));
-                
-        step.reject();
-        
-        ApprovalRequest request = step.getRequest();
-        request.setStatus("REJECTED");
+
+    public List<ApprovalRequest> getInbox(Long companyId, Long userId) {
+        return approvalRepository.findByCompanyIdAndRequesterUserId(companyId, userId);
+    }
+
+    public List<ApprovalRequest> getPending(Long companyId, Long userId) {
+        return approvalRepository.findPendingRequests(companyId, userId);
     }
 }

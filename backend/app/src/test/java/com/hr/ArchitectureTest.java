@@ -9,6 +9,9 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
+import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
+import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
+
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 @AnalyzeClasses(packages = "com.hr", importOptions = ImportOption.DoNotIncludeTests.class)
@@ -47,6 +50,35 @@ public class ArchitectureTest {
                     }
                 }
             });
+
+    /**
+     * 모듈 간 순환 참조 금지
+     */
+    @ArchTest
+    static final ArchRule no_cycles_between_modules = slices()
+            .matching("com.hr.modules.(*)..")
+            .should().beFreeOfCycles();
+
+    /**
+     * 레이어드 아키텍처 준수 (Controller -> Service -> Repository)
+     */
+    @ArchTest
+    static final ArchRule layered_architecture_rule = layeredArchitecture()
+            .consideringAllDependencies()
+            .layer("Controller").definedBy("..controller..")
+            .layer("Service").definedBy("..service..", "..listener..", "..event..")
+            .layer("Repository").definedBy("..repository..")
+            .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Service").mayOnlyBeAccessedByLayers("Controller", "Service") 
+            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service");
+
+    /**
+     * Command(modules)는 Query(queries)를 참조하지 않아야 함
+     */
+    @ArchTest
+    static final ArchRule modules_should_not_access_queries = noClasses()
+            .that().resideInAPackage("com.hr.modules..")
+            .should().accessClassesThat().resideInAPackage("com.hr.queries..");
 
     private static String getModuleName(String packageName) {
         // com.hr.modules.{moduleName}.*

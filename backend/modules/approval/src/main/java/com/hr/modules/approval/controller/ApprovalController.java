@@ -10,12 +10,9 @@ import java.util.List;
 @RequestMapping("/api/approval")
 public class ApprovalController {
 
-    private final ApprovalRequestRepository approvalRepository;
     private final com.hr.modules.approval.service.ApprovalService approvalService;
 
-    public ApprovalController(ApprovalRequestRepository approvalRepository, 
-                              com.hr.modules.approval.service.ApprovalService approvalService) {
-        this.approvalRepository = approvalRepository;
+    public ApprovalController(com.hr.modules.approval.service.ApprovalService approvalService) {
         this.approvalService = approvalService;
     }
 
@@ -25,7 +22,7 @@ public class ApprovalController {
     ) {
         Long companyId = Long.parseLong(user.getCompanyId());
         Long requesterId = user.getId();
-        return ApiResponse.success(approvalRepository.findByCompanyIdAndRequesterUserId(companyId, requesterId));
+        return ApiResponse.success(approvalService.getInbox(companyId, requesterId));
     }
 
     @GetMapping("/pending")
@@ -34,25 +31,46 @@ public class ApprovalController {
     ) {
         Long companyId = Long.parseLong(user.getCompanyId());
         Long userId = user.getId();
-        return ApiResponse.success(approvalRepository.findPendingRequests(companyId, userId));
+        return ApiResponse.success(approvalService.getPending(companyId, userId));
     }
     
     @PostMapping("/request")
     public ApiResponse<Long> createRequest(
-            @RequestBody ApprovalRequest request,
+            @RequestBody com.hr.modules.approval.controller.dto.CreateApprovalRequest request,
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
         com.hr.modules.approval.api.dto.ApprovalRequestCommand command = com.hr.modules.approval.api.dto.ApprovalRequestCommand.builder()
                 .companyId(Long.parseLong(user.getCompanyId()))
                 .requesterId(user.getId())
-                // Use defaults if null
                 .resourceType(request.getResourceType() != null ? request.getResourceType() : "GENERAL")
                 .resourceId(request.getResourceId() != null ? request.getResourceId() : 0L)
                 .title(request.getTitle())
-                .description(null) // Not in basic entity
+                .approverIds(request.getApproverIds())
                 .build();
 
         return ApiResponse.success(approvalService.createApproval(command));
+    }
+
+    @PostMapping("/steps/{stepId}/approve")
+    public ApiResponse<Void> approveStep(
+            @PathVariable Long stepId,
+            @RequestBody(required = false) com.hr.modules.approval.controller.dto.ApproveStepRequest request,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        String comment = (request != null) ? request.getComment() : "";
+        approvalService.approveStep(stepId, user.getId(), comment);
+        return ApiResponse.success(null);
+    }
+
+    @PostMapping("/steps/{stepId}/reject")
+    public ApiResponse<Void> rejectStep(
+            @PathVariable Long stepId,
+            @RequestBody(required = false) com.hr.modules.approval.controller.dto.ApproveStepRequest request,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        String comment = (request != null) ? request.getComment() : "";
+        approvalService.rejectStep(stepId, user.getId(), comment);
+        return ApiResponse.success(null);
     }
 
     @GetMapping("/{id}")
