@@ -330,4 +330,15 @@ This document tracks the relationship between planning documents and their execu
 - [x] `done/phase6_dashboard_report.md`
 - [x] `done/phase7_admin_report.md`
 - [x] `done/phase8_ux_polish_report.md`
-```
+
+## Level 46: Storyboard Gap Analysis & Reorganization
+**Plan:** `plan/docs_storyboard_gap_analysis_plan.md`
+**Status:** ✅ Completed
+**Execution Reports:**
+- `done/docs_storyboard_gap_analysis_report.md`
+
+## Level 47: Storyboard Completion (Gap Remediation)
+**Plan:** `plan/storyboard_completion_plan.md`
+**Status:** 🔄 In Progress
+**Execution Reports:**
+- (Pending)
