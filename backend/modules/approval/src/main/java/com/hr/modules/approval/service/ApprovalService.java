@@ -154,18 +154,44 @@ public class ApprovalService implements ApprovalModuleApi {
         return approvalRepository.findArchiveRequests(companyId, userId);
     }
 
-    public com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse getLinePreview(Long userId, Long companyId, String requestType) {
+    public List<ApprovalRequest> getAdminApprovals(Long companyId) {
+        return approvalRepository.findByCompanyId(companyId);
+    }
+
+    public void forceApprovalDecision(Long requestId, String status, String comment) {
+        ApprovalRequest request = approvalRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Approval Request not found: " + requestId));
+        
+        if ("APPROVED".equals(status)) {
+            request.approve();
+        } else if ("REJECTED".equals(status)) {
+            request.reject();
+        } else {
+            throw new IllegalArgumentException("Invalid status for force decision: " + status);
+        }
+        
+        approvalRepository.save(request);
+        
+        eventPublisher.publishEvent(new com.hr.common.event.ApprovalCompletedEvent(
+            request.getCompanyId(),
+            request.getId(),
+            request.getRequesterUserId(),
+            request.getResourceType()
+        ));
+    }
+
+    public com.hr.modules.approval.dto.ApprovalLinePreviewResponse getLinePreview(Long userId, Long companyId, String requestType) {
         java.util.List<com.hr.modules.approval.domain.ApprovalRule> rules = 
                 approvalRuleRepository.findAllByCompanyIdAndRequestTypeOrderByPriorityAsc(companyId, requestType != null ? requestType : "GENERAL");
         
-        java.util.List<com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo> steps = new java.util.ArrayList<>();
+        java.util.List<com.hr.modules.approval.dto.ApprovalLinePreviewResponse.ApproverInfo> steps = new java.util.ArrayList<>();
         
         if (rules.isEmpty()) {
             // Default: Requester -> Manager
             try {
                 Long managerId = userApi.getManagerIdOfUser(userId);
                 com.hr.modules.user.api.UserInfoDto managerInfo = userApi.getUserInfo(managerId);
-                steps.add(com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
+                steps.add(com.hr.modules.approval.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
                         .stepOrder(1)
                         .approverId(managerId)
                         .approverName(managerInfo.getName())
@@ -186,7 +212,7 @@ public class ApprovalService implements ApprovalModuleApi {
                 
                 if (approverId != null && !approverId.equals(userId)) {
                     com.hr.modules.user.api.UserInfoDto appInfo = userApi.getUserInfo(approverId);
-                    steps.add(com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
+                    steps.add(com.hr.modules.approval.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
                             .stepOrder(order++)
                             .approverId(approverId)
                             .approverName(appInfo.getName())
@@ -195,7 +221,7 @@ public class ApprovalService implements ApprovalModuleApi {
             }
         }
 
-        return com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.builder()
+        return com.hr.modules.approval.dto.ApprovalLinePreviewResponse.builder()
                 .steps(steps)
                 .build();
     }

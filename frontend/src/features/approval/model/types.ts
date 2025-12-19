@@ -1,12 +1,13 @@
 export interface ApprovalRequest {
     id: number;
     companyId: number;
-    requesterId: number;
-    requesterName: string;
+    requesterUserId: number;
+    requesterName?: string;
     title: string;
-    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELED';
     createdAt: string;
-    type: 'VACATION' | 'EXPENSE' | 'EQUIPMENT';
+    resourceType: string;
+    resourceId?: number;
     steps?: ApprovalStep[];
 }
 

@@ -88,4 +88,23 @@ export const useApprovalLinePreview = (enabled: boolean = true) => {
     };
 };
 
+export const useAdminApprovals = () => {
+    const { data, error, isLoading, mutate } = useSWR<ApprovalRequest[]>(
+        '/admin/approvals',
+        fetcher
+    );
+    return {
+        data: data || [],
+        isLoading,
+        isError: error,
+        mutate
+    };
+};
+
+export const forceApprovalDecision = async (id: number, status: 'APPROVED' | 'REJECTED', comment?: string): Promise<void> => {
+    await client.post(`/admin/approvals/${id}/force-decision`, null, {
+        params: { status, comment }
+    });
+};
+
 

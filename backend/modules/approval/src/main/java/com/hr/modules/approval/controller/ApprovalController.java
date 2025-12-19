@@ -2,7 +2,6 @@ package com.hr.modules.approval.controller;
 
 import com.hr.common.dto.ApiResponse;
 import com.hr.modules.approval.domain.ApprovalRequest;
-import com.hr.modules.approval.repository.ApprovalRequestRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class ApprovalController {
     }
 
     @GetMapping("/line/preview")
-    public ApiResponse<com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse> getLinePreview(
+    public ApiResponse<com.hr.modules.approval.dto.ApprovalLinePreviewResponse> getLinePreview(
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user,
             @RequestParam(required = false) String type
     ) {
@@ -54,7 +53,7 @@ public class ApprovalController {
     
     @PostMapping("/request")
     public ApiResponse<Long> createRequest(
-            @RequestBody com.hr.modules.approval.controller.dto.CreateApprovalRequest request,
+            @RequestBody com.hr.modules.approval.dto.CreateApprovalRequest request,
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
         com.hr.modules.approval.api.dto.ApprovalRequestCommand command = com.hr.modules.approval.api.dto.ApprovalRequestCommand.builder()
@@ -72,7 +71,7 @@ public class ApprovalController {
     @PostMapping("/steps/{stepId}/approve")
     public ApiResponse<Void> approveStep(
             @PathVariable Long stepId,
-            @RequestBody(required = false) com.hr.modules.approval.controller.dto.ApproveStepRequest request,
+            @RequestBody(required = false) com.hr.modules.approval.dto.ApproveStepRequest request,
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
         String comment = (request != null) ? request.getComment() : "";
@@ -83,7 +82,7 @@ public class ApprovalController {
     @PostMapping("/steps/{stepId}/reject")
     public ApiResponse<Void> rejectStep(
             @PathVariable Long stepId,
-            @RequestBody(required = false) com.hr.modules.approval.controller.dto.ApproveStepRequest request,
+            @RequestBody(required = false) com.hr.modules.approval.dto.ApproveStepRequest request,
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
     ) {
         String comment = (request != null) ? request.getComment() : "";
@@ -96,4 +95,3 @@ public class ApprovalController {
         return ApiResponse.success(approvalService.getApprovalRequest(id));
     }
 }
-

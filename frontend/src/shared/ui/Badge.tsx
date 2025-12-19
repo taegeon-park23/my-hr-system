@@ -11,7 +11,7 @@ const badgeVariants = cva(
                 secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-100/80',
                 primary: 'bg-primary text-white hover:bg-primary/80 border-transparent',
                 success: 'bg-success-bg text-success hover:bg-success-bg/80',
-                warning: 'bg-warning-bg text-warning-800 hover:bg-warning-bg/80', // Text color optimized for contrast
+                warning: 'bg-warning-bg text-warning-800 hover:bg-warning-bg/80',
                 danger: 'bg-danger-bg text-danger hover:bg-danger-bg/80',
                 info: 'bg-info-bg text-info hover:bg-info-bg/80',
                 neutral: 'bg-neutral-bg text-neutral hover:bg-neutral-bg/80',
@@ -24,16 +24,17 @@ const badgeVariants = cva(
     }
 );
 
-export interface BadgeProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+    variant?: 'default' | 'secondary' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'outline';
     children?: React.ReactNode;
+    className?: string;
 }
 
-
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, children, ...props }: BadgeProps) {
     return (
-        <div className={cn(badgeVariants({ variant }), className)} {...props} />
+        <div className={cn(badgeVariants({ variant }), className)} {...props}>
+            {children}
+        </div>
     );
 }
 

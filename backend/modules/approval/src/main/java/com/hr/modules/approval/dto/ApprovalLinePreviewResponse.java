@@ -1,4 +1,4 @@
-package com.hr.modules.approval.controller.dto;
+package com.hr.modules.approval.dto;
 
 import lombok.Builder;
 import lombok.Getter;

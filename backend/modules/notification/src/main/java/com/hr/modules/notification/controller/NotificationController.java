@@ -5,6 +5,7 @@ import com.hr.common.security.UserPrincipal;
 import com.hr.modules.notification.controller.dto.AnnouncementResponse;
 import com.hr.modules.notification.controller.dto.InAppNotificationResponse;
 import com.hr.modules.notification.service.NotificationService;
+import com.hr.modules.notification.service.SseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

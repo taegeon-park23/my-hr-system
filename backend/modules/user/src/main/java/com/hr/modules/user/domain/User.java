@@ -51,5 +51,9 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 

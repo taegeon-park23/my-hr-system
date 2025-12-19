@@ -26,11 +26,12 @@ const buttonVariants = cva(
     }
 );
 
-interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+    size?: 'sm' | 'md' | 'lg';
     isLoading?: boolean;
     children?: React.ReactNode;
+    className?: string;
 }
 
 

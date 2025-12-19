@@ -59,6 +59,43 @@ public class UserService implements UserModuleApi {
         return userRepository.countByDeptId(user.getDeptId());
     }
 
+    public java.util.List<com.hr.modules.user.dto.UserResponse> searchUsers(Long companyId, String query, Long deptId) {
+        // Simple search logic for now
+        return userRepository.findByCompanyId(companyId).stream()
+                .filter(u -> (query == null || u.getName().contains(query) || u.getEmail().contains(query)))
+                .filter(u -> (deptId == null || deptId.equals(u.getDeptId())))
+                .map(com.hr.modules.user.dto.UserResponse::from)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public com.hr.modules.user.dto.UserResponse getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return com.hr.modules.user.dto.UserResponse.from(user);
+    }
+
+    @Transactional
+    public Long createUser(Long companyId, com.hr.modules.user.dto.UserSaveRequest request) {
+        String encodedPassword = passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "1234");
+        User user = new User(companyId, request.getEmail(), encodedPassword, request.getName(), request.getRole());
+        user.setDeptId(request.getDeptId());
+        return userRepository.save(user).getId();
+    }
+
+    @Transactional
+    public void updateUser(Long userId, com.hr.modules.user.dto.UserSaveRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
+        // Update fields if provided
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+        user.setDeptId(request.getDeptId());
+        user.setRole(request.getRole());
+        userRepository.save(user);
+    }
+
     @Override
     public UserInfoDto getUserInfo(Long userId) {
         User user = userRepository.findById(userId)

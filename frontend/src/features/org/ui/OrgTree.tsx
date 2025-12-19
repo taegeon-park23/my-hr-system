@@ -1,22 +1,38 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Department } from '../model/types';
 import { Icon } from '@/shared/ui/Icon';
 
 interface OrgTreeProps {
     nodes: Department[];
+    selectedId?: number | null;
+    onSelect: (node: Department) => void;
 }
 
-const TreeNode = ({ node }: { node: Department }) => {
+const TreeNode = ({
+    node,
+    selectedId,
+    onSelect
+}: {
+    node: Department;
+    selectedId?: number | null;
+    onSelect: (node: Department) => void;
+}) => {
     const [isOpen, setIsOpen] = useState(true);
     const hasChildren = node.children && node.children.length > 0;
+    const isSelected = selectedId === node.id;
 
     return (
         <div className="ml-4">
-            <div className="flex items-center py-2">
+            <div className="flex items-center py-2 group">
                 {hasChildren && (
                     <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                        onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            setIsOpen(!isOpen);
+                        }}
+                        className="mr-1 text-gray-400 hover:text-gray-600 focus:outline-none"
                     >
                         {isOpen ? (
                             <Icon name="ChevronDownIcon" className="w-4 h-4" />
@@ -25,20 +41,40 @@ const TreeNode = ({ node }: { node: Department }) => {
                         )}
                     </button>
                 )}
-                <div className={`
-          flex items-center px-3 py-1.5 rounded-md border 
-          ${node.id === 1 ? 'bg-primary-50 border-primary-200' : 'bg-white border-gray-200'}
-        `}>
+                {!hasChildren && <div className="w-5" />}
 
-                    <span className="text-sm font-medium text-gray-900">{node.name}</span>
-                    <span className="ml-2 text-xs text-gray-400">({node.depth})</span>
+                <div
+                    onClick={() => onSelect(node)}
+                    className={`
+                        flex items-center px-3 py-1.5 rounded-lg border cursor-pointer transition-all
+                        ${isSelected
+                            ? 'bg-primary-50 border-primary-200 shadow-sm ring-1 ring-primary-200'
+                            : 'bg-white border-gray-100 hover:border-gray-300 hover:bg-gray-50'
+                        }
+                    `}
+                >
+                    <Icon
+                        name={node.parentId === null ? 'HomeIcon' : 'FolderIcon'}
+                        className={`w-4 h-4 mr-2 ${isSelected ? 'text-primary-600' : 'text-gray-400'}`}
+                    />
+                    <span className={`text-sm font-medium ${isSelected ? 'text-primary-900' : 'text-gray-700'}`}>
+                        {node.name}
+                    </span>
+                    <span className="ml-2 text-[10px] text-gray-400 uppercase tracking-tighter">
+                        {node.id}
+                    </span>
                 </div>
             </div>
 
             {isOpen && hasChildren && (
-                <div className="border-l-2 border-gray-100 ml-2">
+                <div className="border-l border-gray-100 ml-2.5">
                     {node.children!.map((child) => (
-                        <TreeNode key={child.id} node={child} />
+                        <TreeNode
+                            key={child.id}
+                            node={child}
+                            selectedId={selectedId}
+                            onSelect={onSelect}
+                        />
                     ))}
                 </div>
             )}
@@ -46,13 +82,20 @@ const TreeNode = ({ node }: { node: Department }) => {
     );
 };
 
-export const OrgTree = ({ nodes }: OrgTreeProps) => {
+export const OrgTree = ({ nodes, selectedId, onSelect }: OrgTreeProps) => {
     return (
-        <div className="p-4 bg-white shadow rounded-lg">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Organization Structure</h3>
-            {nodes.map((node) => (
-                <TreeNode key={node.id} node={node} />
-            ))}
+        <div className="p-4 bg-white shadow-sm border border-slate-200 rounded-2xl">
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">조직 구조</h3>
+            <div className="-ml-4">
+                {nodes.map((node) => (
+                    <TreeNode
+                        key={node.id}
+                        node={node}
+                        selectedId={selectedId}
+                        onSelect={onSelect}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

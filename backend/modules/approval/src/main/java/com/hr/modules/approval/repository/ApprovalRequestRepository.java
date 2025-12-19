@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ApprovalRequestRepository extends JpaRepository<ApprovalRequest, Long> {
     List<ApprovalRequest> findByCompanyIdAndRequesterUserId(Long companyId, Long requesterUserId);
+    List<ApprovalRequest> findByCompanyId(Long companyId);
 
     @org.springframework.data.jpa.repository.Query("SELECT r FROM ApprovalRequest r " +
            "JOIN com.hr.modules.approval.domain.ApprovalStep s ON s.request = r " +
