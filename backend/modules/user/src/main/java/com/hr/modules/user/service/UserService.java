@@ -121,5 +121,15 @@ public class UserService implements UserModuleApi {
                         .build())
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    @Override
+    public Long getDeptHeadId(Long deptId) {
+        if (deptId == null) return null;
+        java.util.List<User> managers = userRepository.findManagersByDeptId(deptId);
+        return managers.stream()
+                .map(User::getId)
+                .findFirst()
+                .orElse(null);
+    }
 }
 

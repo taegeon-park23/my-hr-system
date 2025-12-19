@@ -19,15 +19,18 @@ public class ApprovalService implements ApprovalModuleApi {
     private final ApprovalRequestRepository approvalRepository;
     private final ApprovalStepRepository approvalStepRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final com.hr.modules.approval.repository.ApprovalRuleRepository approvalRuleRepository;
     private final com.hr.modules.user.api.UserModuleApi userApi;
 
     public ApprovalService(ApprovalRequestRepository approvalRepository,
                            ApprovalStepRepository approvalStepRepository,
                            ApplicationEventPublisher eventPublisher,
+                           com.hr.modules.approval.repository.ApprovalRuleRepository approvalRuleRepository,
                            com.hr.modules.user.api.UserModuleApi userApi) {
         this.approvalRepository = approvalRepository;
         this.approvalStepRepository = approvalStepRepository;
         this.eventPublisher = eventPublisher;
+        this.approvalRuleRepository = approvalRuleRepository;
         this.userApi = userApi;
     }
 
@@ -151,19 +154,49 @@ public class ApprovalService implements ApprovalModuleApi {
         return approvalRepository.findArchiveRequests(companyId, userId);
     }
 
-    public com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse getLinePreview(Long userId) {
-        // Simple logic: Requester -> Manager
-        Long managerId = userApi.getManagerIdOfUser(userId);
-        com.hr.modules.user.api.UserInfoDto managerInfo = userApi.getUserInfo(managerId);
-
-        return com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.builder()
-                .steps(java.util.List.of(
-                    com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
+    public com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse getLinePreview(Long userId, Long companyId, String requestType) {
+        java.util.List<com.hr.modules.approval.domain.ApprovalRule> rules = 
+                approvalRuleRepository.findAllByCompanyIdAndRequestTypeOrderByPriorityAsc(companyId, requestType != null ? requestType : "GENERAL");
+        
+        java.util.List<com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo> steps = new java.util.ArrayList<>();
+        
+        if (rules.isEmpty()) {
+            // Default: Requester -> Manager
+            try {
+                Long managerId = userApi.getManagerIdOfUser(userId);
+                com.hr.modules.user.api.UserInfoDto managerInfo = userApi.getUserInfo(managerId);
+                steps.add(com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
                         .stepOrder(1)
                         .approverId(managerId)
                         .approverName(managerInfo.getName())
-                        .build()
-                ))
+                        .build());
+            } catch (Exception e) {
+                // No manager found, return empty or handle accordingly
+            }
+        } else {
+            com.hr.modules.user.api.UserInfoDto userInfo = userApi.getUserInfo(userId);
+            int order = 1;
+            for (com.hr.modules.approval.domain.ApprovalRule rule : rules) {
+                Long approverId = null;
+                if ("TEAM_LEADER".equals(rule.getApprovalLineKey())) {
+                    try { approverId = userApi.getManagerIdOfUser(userId); } catch (Exception e) {}
+                } else if ("DEPT_HEAD".equals(rule.getApprovalLineKey())) {
+                    approverId = userApi.getDeptHeadId(userInfo.getDeptId());
+                }
+                
+                if (approverId != null && !approverId.equals(userId)) {
+                    com.hr.modules.user.api.UserInfoDto appInfo = userApi.getUserInfo(approverId);
+                    steps.add(com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
+                            .stepOrder(order++)
+                            .approverId(approverId)
+                            .approverName(appInfo.getName())
+                            .build());
+                }
+            }
+        }
+
+        return com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.builder()
+                .steps(steps)
                 .build();
     }
 }

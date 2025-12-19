@@ -170,8 +170,32 @@ erDiagram
         string recipient_email
         enum status "SENT | FAILED"
     }
+    ANNOUNCEMENTS {
+        bigint id PK
+        bigint company_id FK
+        string title
+        string content
+        string author
+        string type "NOTICE | URGENT"
+    }
+    IN_APP_NOTIFICATIONS {
+        bigint id PK
+        bigint company_id FK
+        bigint recipient_id FK
+        string message
+        boolean is_read
+    }
+    APPROVAL_RULES {
+        bigint id PK
+        bigint company_id FK
+        string request_type
+        string approval_line_key "TEAM_LEADER | DEPT_HEAD | CEO"
+    }
     
     USERS |o--o{ ASSETS : "uses"
+    COMPANIES ||--o{ ANNOUNCEMENTS : "posts"
+    USERS ||--o{ IN_APP_NOTIFICATIONS : "receives"
+    COMPANIES ||--o{ APPROVAL_RULES : "defines"
 
 ```
 
@@ -202,6 +226,11 @@ erDiagram
 |  |  | `ASSIGNED` | 사용자 지급됨 |
 |  |  | `BROKEN` | 파손/수리 중 |
 |  |  | `DISCARDED` | 폐기됨 |
+| **Notification** | `type` (Announcement) | `NOTICE` | 일반 공지 |
+|  |  | `URGENT` | 긴급 공지 |
+| **Approval** | `approval_line_key` | `TEAM_LEADER` | 직속 상사(팀장) |
+|  |  | `DEPT_HEAD` | 부서장 |
+|  |  | `CEO` | 대표이사 |
 
 ## **4. 데이터 보존 및 삭제 정책 (Retention Policy)**
 
@@ -534,6 +563,49 @@ CREATE TABLE notification_logs (
     
     INDEX idx_noti_company (company_id),
     INDEX idx_noti_date (sent_at)
+) ENGINE=InnoDB;
+
+-- 18. Announcements (공지사항)
+CREATE TABLE announcements (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(100) NOT NULL,
+    type VARCHAR(20) NOT NULL DEFAULT 'NOTICE' COMMENT 'NOTICE, URGENT',
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_announcement_company (company_id)
+) ENGINE=InnoDB;
+
+-- 19. In-App Notifications (사내 알림)
+CREATE TABLE in_app_notifications (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    recipient_id BIGINT NOT NULL,
+    message VARCHAR(500) NOT NULL,
+    link VARCHAR(255) NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_in_app_noti_recipient (recipient_id),
+    INDEX idx_in_app_noti_company (company_id)
+) ENGINE=InnoDB;
+
+-- 20. Approval Rules (결재 전결 규정)
+CREATE TABLE approval_rules (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_id BIGINT NOT NULL,
+    request_type VARCHAR(50) NOT NULL COMMENT 'VACATION, PAYROLL 등',
+    min_amount BIGINT DEFAULT 0,
+    max_amount BIGINT DEFAULT 0,
+    approval_line_key VARCHAR(50) NOT NULL COMMENT 'TEAM_LEADER, DEPT_HEAD, CEO 등',
+    priority INT NOT NULL DEFAULT 0,
+    
+    INDEX idx_approval_rule_type (company_id, request_type)
 ) ENGINE=InnoDB;
 
 ```

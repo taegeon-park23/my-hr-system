@@ -1,44 +1,63 @@
 package com.hr.modules.notification.controller;
 
 import com.hr.common.dto.ApiResponse;
+import com.hr.common.security.UserPrincipal;
 import com.hr.modules.notification.controller.dto.AnnouncementResponse;
+import com.hr.modules.notification.controller.dto.InAppNotificationResponse;
+import com.hr.modules.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
 
+    private final NotificationService notificationService;
+    private final SseService sseService;
+
+    @GetMapping(value = "/subscribe", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    public org.springframework.web.servlet.mvc.method.annotation.SseEmitter subscribe(@AuthenticationPrincipal UserPrincipal user) {
+        return sseService.subscribe(user.getId());
+    }
+
     @GetMapping("/announcements")
-    public ApiResponse<List<AnnouncementResponse>> getAnnouncements() {
-        // MVP: Return static list of announcements
-        return ApiResponse.success(List.of(
-            AnnouncementResponse.builder()
-                .id(1L)
-                .title("2024년 연봉 협상 안내")
-                .author("인사팀")
-                .createdAt(LocalDateTime.now().minusDays(1))
-                .type("NOTICE")
-                .build(),
-            AnnouncementResponse.builder()
-                .id(2L)
-                .title("[공지] 연말 정산 서류 제출 기한 안내")
-                .author("인사팀")
-                .createdAt(LocalDateTime.now().minusDays(3))
-                .type("URGENT")
-                .build(),
-            AnnouncementResponse.builder()
-                .id(3L)
-                .title("신규 입사자 교육 일정 안내")
-                .author("경영지원")
-                .createdAt(LocalDateTime.now().minusDays(5))
-                .type("NOTICE")
-                .build()
-        ));
+    public ApiResponse<List<AnnouncementResponse>> getAnnouncements(@AuthenticationPrincipal UserPrincipal user) {
+        return ApiResponse.success(
+            notificationService.getAnnouncements(Long.parseLong(user.getCompanyId())).stream()
+                .map(a -> AnnouncementResponse.builder()
+                        .id(a.getId())
+                        .title(a.getTitle())
+                        .author(a.getAuthor())
+                        .createdAt(a.getCreatedAt())
+                        .type(a.getType())
+                        .build())
+                .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping
+    public ApiResponse<List<InAppNotificationResponse>> getNotifications(@AuthenticationPrincipal UserPrincipal user) {
+        return ApiResponse.success(
+            notificationService.getNotifications(user.getId()).stream()
+                .map(n -> InAppNotificationResponse.builder()
+                        .id(n.getId())
+                        .message(n.getMessage())
+                        .link(n.getLink())
+                        .read(n.isRead())
+                        .createdAt(n.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList())
+        );
+    }
+
+    @PutMapping("/{id}/read")
+    public ApiResponse<Void> readNotification(@PathVariable Long id) {
+        notificationService.markAsRead(id);
+        return ApiResponse.success(null);
     }
 }

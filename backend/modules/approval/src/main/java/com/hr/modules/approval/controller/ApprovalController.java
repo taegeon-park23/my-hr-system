@@ -45,9 +45,10 @@ public class ApprovalController {
 
     @GetMapping("/line/preview")
     public ApiResponse<com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse> getLinePreview(
-            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user,
+            @RequestParam(required = false) String type
     ) {
-        return ApiResponse.success(approvalService.getLinePreview(user.getId()));
+        return ApiResponse.success(approvalService.getLinePreview(user.getId(), Long.parseLong(user.getCompanyId()), type));
     }
 
     
