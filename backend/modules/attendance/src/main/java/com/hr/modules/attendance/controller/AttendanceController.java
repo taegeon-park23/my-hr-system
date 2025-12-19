@@ -19,15 +19,34 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping("/my")
-    public ApiResponse<List<AttendanceLogResponse>> getMyLog(@AuthenticationPrincipal UserPrincipal user) {
-        // Breaking Change: Removed @RequestParam Long userId, using Authenticated User
+    public ApiResponse<List<AttendanceLogResponse>> getMyLog(
+            @AuthenticationPrincipal UserPrincipal user,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month
+    ) {
+        List<com.hr.modules.attendance.domain.AttendanceLog> logs;
+        if (year != null && month != null) {
+            logs = attendanceService.getMyLogsByMonth(user.getId(), year, month);
+        } else {
+            logs = attendanceService.getMyLogs(user.getId());
+        }
+        
         return ApiResponse.success(
-            attendanceService.getMyLogs(user.getId())
-                    .stream()
+            logs.stream()
                     .map(AttendanceLogResponse::from)
                     .collect(Collectors.toList())
         );
     }
+
+    @GetMapping("/summary")
+    public ApiResponse<com.hr.modules.attendance.dto.AttendanceSummaryResponse> getSummary(
+            @AuthenticationPrincipal UserPrincipal user,
+            @RequestParam(defaultValue = "2025") int year,
+            @RequestParam(defaultValue = "12") int month
+    ) {
+        return ApiResponse.success(attendanceService.getMonthlySummary(user.getId(), year, month));
+    }
+
 
     @PostMapping("/check-in")
     public ApiResponse<String> checkIn(@AuthenticationPrincipal UserPrincipal user, 

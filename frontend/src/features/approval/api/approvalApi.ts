@@ -55,3 +55,37 @@ export const rejectStep = async (stepId: number, comment?: string): Promise<void
     await client.post(`/approval/steps/${stepId}/reject`, { comment });
 };
 
+export const useApprovalArchive = () => {
+    const { data, error, isLoading, mutate } = useSWR<ApprovalRequest[]>(
+        '/approval/archive',
+        fetcher
+    );
+    return {
+        data: data || [],
+        isLoading,
+        isError: error,
+        mutate
+    };
+};
+
+export interface ApprovalLinePreview {
+    steps: {
+        stepOrder: number;
+        approverId: number;
+        approverName: string;
+    }[];
+}
+
+export const useApprovalLinePreview = (enabled: boolean = true) => {
+    const { data, error, isLoading } = useSWR<ApprovalLinePreview>(
+        enabled ? '/approval/line/preview' : null,
+        fetcher
+    );
+    return {
+        line: data,
+        isLoading,
+        isError: error
+    };
+};
+
+

@@ -21,6 +21,31 @@ public class VacationService {
     private final VacationBalanceRepository balanceRepository;
     private final VacationRequestRepository requestRepository;
     private final ApprovalModuleApi approvalApi;
+    private final com.hr.modules.user.api.UserModuleApi userApi;
+
+    @Transactional(readOnly = true)
+    public List<com.hr.modules.vacation.dto.TeamVacationResponse> getTeamVacations(Long userId) {
+        com.hr.modules.user.api.UserInfoDto userInfo = userApi.getUserInfo(userId);
+        if (userInfo.getDeptId() == null) return java.util.Collections.emptyList();
+
+        java.util.List<com.hr.modules.user.api.UserInfoDto> teamMembers = userApi.getUsersByDeptId(userInfo.getDeptId());
+        java.util.Map<Long, String> userNames = teamMembers.stream()
+                .collect(java.util.stream.Collectors.toMap(com.hr.modules.user.api.UserInfoDto::getUserId, com.hr.modules.user.api.UserInfoDto::getName));
+
+        List<VacationRequest> requests = requestRepository.findByUserIdInAndStartDateGreaterThanEqualOrderByStartDateAsc(
+                userNames.keySet(), LocalDate.now()
+        );
+
+        return requests.stream()
+                .map(r -> com.hr.modules.vacation.dto.TeamVacationResponse.builder()
+                        .userName(userNames.get(r.getUserId()))
+                        .startDate(r.getStartDate())
+                        .endDate(r.getEndDate())
+                        .type(r.getVacationType().toString())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
 
     @Transactional(readOnly = true)
     public VacationBalance getBalance(Long companyId, Long userId, int year) {

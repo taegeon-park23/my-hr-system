@@ -39,6 +39,14 @@ public class VacationController {
         );
     }
 
+    @GetMapping("/team")
+    public ApiResponse<List<com.hr.modules.vacation.dto.TeamVacationResponse>> getTeamVacations(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        return ApiResponse.success(vacationService.getTeamVacations(user.getId()));
+    }
+
+
     @PostMapping("/request")
     public ApiResponse<VacationRequestResponse> requestVacation(
             @RequestBody VacationRequestDto dto,

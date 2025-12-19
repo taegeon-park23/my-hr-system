@@ -8,5 +8,7 @@ import java.util.Optional;
 public interface AttendanceRepository extends JpaRepository<AttendanceLog, Long> {
     Optional<AttendanceLog> findByUserIdAndDate(Long userId, LocalDate date);
     java.util.List<AttendanceLog> findAllByUserIdOrderByDateDesc(Long userId);
+    java.util.List<AttendanceLog> findAllByUserIdAndDateBetweenOrderByDateDesc(Long userId, LocalDate startDate, LocalDate endDate);
+
 }
 

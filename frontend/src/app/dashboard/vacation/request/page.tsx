@@ -10,17 +10,23 @@ import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { Button } from '@/shared/ui/Button';
 import { Icon } from '@/shared/ui/Icon';
 
+import { useApprovalLinePreview } from '@/features/approval/api/approvalApi';
+
 export default function VacationRequestPage() {
     const router = useRouter();
     const { user } = useAuthStore();
-    const { balance, isLoading } = useMyVacationBalance(user?.id, new Date().getFullYear());
+    const { balance, isLoading: balanceLoading } = useMyVacationBalance(user?.id, new Date().getFullYear());
+    const { line, isLoading: lineLoading } = useApprovalLinePreview();
 
-    // Mock approval steps
-    const mockSteps = [
+    const steps = [
         { role: '기안', name: user?.name || '본인', status: 'APPROVED' as const },
-        { role: '팀장 승인', name: '이팀장', status: 'PENDING' as const },
-        { role: '본부장 승인', name: '박본부장', status: 'WAITING' as const },
+        ...(line?.steps.map(s => ({
+            role: s.stepOrder === 1 ? '팀장 승인' : '결재',
+            name: s.approverName,
+            status: 'PENDING' as const
+        })) || [])
     ];
+
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -43,7 +49,7 @@ export default function VacationRequestPage() {
 
                 {/* Right: Info Panel */}
                 <div className="space-y-8">
-                    {!isLoading && balance && (
+                    {!balanceLoading && balance && (
                         <MyVacationStatusCard
                             remainingDays={balance.remainingDays}
                             usedDays={balance.usedDays}
@@ -51,7 +57,7 @@ export default function VacationRequestPage() {
                             pendingDays={0}
                         />
                     )}
-                    <ApprovalLinePreview steps={mockSteps} />
+                    {!lineLoading && <ApprovalLinePreview steps={steps} />}
                 </div>
             </div>
         </div>

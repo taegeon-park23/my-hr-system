@@ -106,4 +106,20 @@ public class UserService implements UserModuleApi {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No manager found for department: " + requester.getDeptId()));
     }
+
+    @Override
+    public java.util.List<UserInfoDto> getUsersByDeptId(Long deptId) {
+        if (deptId == null) return java.util.Collections.emptyList();
+        return userRepository.findByDeptId(deptId).stream()
+                .map(user -> UserInfoDto.builder()
+                        .userId(user.getId())
+                        .companyId(user.getCompanyId())
+                        .deptId(user.getDeptId())
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .role(user.getRole())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
+

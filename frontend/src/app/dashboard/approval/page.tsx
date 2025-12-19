@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useApprovalInbox, usePendingApprovals } from '@/features/approval/api/approvalApi';
+import { useApprovalInbox, usePendingApprovals, useApprovalArchive } from '@/features/approval/api/approvalApi';
 import { ApprovalList } from '@/features/approval/ui/ApprovalList';
 import { ApprovalActionToolbar } from '@/features/approval/ui/ApprovalActionToolbar';
 import { RequestForm } from '@/features/approval/ui/RequestForm';
@@ -13,6 +13,7 @@ import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 
 type TabType = 'to-approve' | 'initiated' | 'archive';
 
+
 export default function ApprovalPage() {
     const [showForm, setShowForm] = useState(false);
     const [activeTab, setActiveTab] = useState<TabType>('to-approve');
@@ -22,8 +23,8 @@ export default function ApprovalPage() {
 
     const pending = usePendingApprovals();
     const inbox = useApprovalInbox(user?.id);
-    // Mock archive data
-    const archive = { data: [], isLoading: false, isError: null, mutate: () => { } };
+    const archive = useApprovalArchive();
+
 
     const getActiveData = () => {
         switch (activeTab) {
@@ -94,8 +95,8 @@ export default function ApprovalPage() {
                                     setSelectedIds([]);
                                 }}
                                 className={`flex items-center px-4 py-3 text-sm font-medium transition-all relative ${activeTab === tab.id
-                                        ? 'text-primary-600'
-                                        : 'text-slate-500 hover:text-slate-700'
+                                    ? 'text-primary-600'
+                                    : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
                                 <Icon name={tab.icon as any} className="w-4 h-4 mr-2" />

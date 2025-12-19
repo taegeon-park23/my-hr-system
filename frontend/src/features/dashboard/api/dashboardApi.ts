@@ -28,3 +28,25 @@ export const useDepartmentStats = () => {
         isError: error
     };
 };
+
+export interface Announcement {
+    id: number;
+    title: string;
+    content: string;
+    author: string;
+    createdAt: string;
+    type: string;
+}
+
+export const useAnnouncements = () => {
+    const { data, error, isLoading } = useSWR<Announcement[]>(
+        '/notifications/announcements',
+        fetcher
+    );
+    return {
+        announcements: data || [],
+        isLoading,
+        isError: error
+    };
+};
+

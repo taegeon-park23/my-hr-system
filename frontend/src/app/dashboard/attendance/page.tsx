@@ -13,32 +13,20 @@ import { Badge } from '@/shared/ui/Badge';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 
+import { useMonthlyAttendance, useAttendanceSummary } from '@/features/attendance/api/attendanceApi';
+
 export default function AttendancePage() {
     const now = new Date();
     const [year, setYear] = useState(now.getFullYear());
     const [month, setMonth] = useState(now.getMonth() + 1);
     const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
-    const [logs, setLogs] = useState<AttendanceLog[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+
+    const { data: logs, isLoading: loading, isError: error, mutate } = useMonthlyAttendance(year, month);
+    const { data: summary, isLoading: summaryLoading } = useAttendanceSummary(year, month);
+
     const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
     const [selectedLog, setSelectedLog] = useState<AttendanceLog | null>(null);
 
-    useEffect(() => {
-        const fetchLogs = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const logsData = await getMonthlyAttendance(year, month);
-                setLogs(logsData);
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error('Failed to load attendance logs'));
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchLogs();
-    }, [year, month]);
 
     const handleCorrectionRequest = (log: AttendanceLog) => {
         setSelectedLog(log);
@@ -83,11 +71,12 @@ export default function AttendancePage() {
                 </div>
 
                 <AttendanceSummaryCard
-                    totalHours={140}
-                    lateCount={1}
-                    absentCount={0}
-                    vacationUsed={2}
+                    totalHours={summary?.totalHours || 0}
+                    lateCount={summary?.lateCount || 0}
+                    absentCount={summary?.absentCount || 0}
+                    vacationUsed={summary?.vacationUsed || 0}
                 />
+
 
                 <AttendanceFilterBar
                     year={year}

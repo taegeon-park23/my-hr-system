@@ -55,3 +55,24 @@ export function useMyVacationRequests(userId: number | undefined) {
         isError: error,
     };
 }
+
+export interface TeamVacation {
+    userName: string;
+    startDate: string;
+    endDate: string;
+    type: string;
+}
+
+export function useTeamVacations() {
+    const { data, error, isLoading } = useSWR<TeamVacation[]>(
+        '/vacations/team',
+        (url) => client.get(url).then(res => res.data)
+    );
+
+    return {
+        teamVacations: data || [],
+        isLoading,
+        isError: error
+    };
+}
+

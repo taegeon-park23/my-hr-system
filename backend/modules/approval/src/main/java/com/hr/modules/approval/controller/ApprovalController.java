@@ -33,6 +33,23 @@ public class ApprovalController {
         Long userId = user.getId();
         return ApiResponse.success(approvalService.getPending(companyId, userId));
     }
+
+    @GetMapping("/archive")
+    public ApiResponse<List<ApprovalRequest>> getArchiveRequests(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        Long companyId = Long.parseLong(user.getCompanyId());
+        Long userId = user.getId();
+        return ApiResponse.success(approvalService.getArchive(companyId, userId));
+    }
+
+    @GetMapping("/line/preview")
+    public ApiResponse<com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse> getLinePreview(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.hr.common.security.UserPrincipal user
+    ) {
+        return ApiResponse.success(approvalService.getLinePreview(user.getId()));
+    }
+
     
     @PostMapping("/request")
     public ApiResponse<Long> createRequest(

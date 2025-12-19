@@ -19,14 +19,18 @@ public class ApprovalService implements ApprovalModuleApi {
     private final ApprovalRequestRepository approvalRepository;
     private final ApprovalStepRepository approvalStepRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final com.hr.modules.user.api.UserModuleApi userApi;
 
     public ApprovalService(ApprovalRequestRepository approvalRepository,
                            ApprovalStepRepository approvalStepRepository,
-                           ApplicationEventPublisher eventPublisher) {
+                           ApplicationEventPublisher eventPublisher,
+                           com.hr.modules.user.api.UserModuleApi userApi) {
         this.approvalRepository = approvalRepository;
         this.approvalStepRepository = approvalStepRepository;
         this.eventPublisher = eventPublisher;
+        this.userApi = userApi;
     }
+
 
     @Override
     public Long createApproval(ApprovalRequestCommand command) {
@@ -142,4 +146,25 @@ public class ApprovalService implements ApprovalModuleApi {
     public List<ApprovalRequest> getPending(Long companyId, Long userId) {
         return approvalRepository.findPendingRequests(companyId, userId);
     }
+
+    public List<ApprovalRequest> getArchive(Long companyId, Long userId) {
+        return approvalRepository.findArchiveRequests(companyId, userId);
+    }
+
+    public com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse getLinePreview(Long userId) {
+        // Simple logic: Requester -> Manager
+        Long managerId = userApi.getManagerIdOfUser(userId);
+        com.hr.modules.user.api.UserInfoDto managerInfo = userApi.getUserInfo(managerId);
+
+        return com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.builder()
+                .steps(java.util.List.of(
+                    com.hr.modules.approval.controller.dto.ApprovalLinePreviewResponse.ApproverInfo.builder()
+                        .stepOrder(1)
+                        .approverId(managerId)
+                        .approverName(managerInfo.getName())
+                        .build()
+                ))
+                .build();
+    }
 }
+
