@@ -142,6 +142,25 @@ public class ApprovalService implements ApprovalModuleApi {
         ));
     }
 
+    public void bulkApprove(List<Long> requestIds, Long approverUserId) {
+        for (Long requestId : requestIds) {
+            // Find the pending step for this user in this request
+            // Optimization: In real world, we would query steps directly.
+            // Here we fetch request and find step.
+            ApprovalRequest request = approvalRepository.findById(requestId)
+                    .orElseThrow(() -> new IllegalArgumentException("Request not found: " + requestId));
+            
+            ApprovalStep pendingStep = request.getSteps().stream()
+                    .filter(s -> s.getStepOrder() == request.getCurrentStepOrder() 
+                            && s.getStatus() == ApprovalStep.ApprovalStatus.PENDING
+                            && s.getApproverId().equals(approverUserId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No pending step for user on request " + requestId));
+            
+            approveStep(pendingStep.getId(), approverUserId, "Bulk Approved");
+        }
+    }
+
     public List<ApprovalRequest> getInbox(Long companyId, Long userId) {
         return approvalRepository.findByCompanyIdAndRequesterUserId(companyId, userId);
     }
