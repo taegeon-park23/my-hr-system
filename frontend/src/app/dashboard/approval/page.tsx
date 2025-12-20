@@ -14,24 +14,32 @@ import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 type TabType = 'to-approve' | 'initiated' | 'archive';
 
 
+import { useApprovalInbox, useApprovalOutbox, useApprovalArchive, bulkApprove, forceApprovalDecision, approveStep } from '@/features/approval/api/approvalApi';
+import { useSWRConfig } from 'swr';
+import { useToast } from '@/shared/ui/Toast';
+
 export default function ApprovalPage() {
     const [showForm, setShowForm] = useState(false);
     const [activeTab, setActiveTab] = useState<TabType>('to-approve');
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const { user } = useAuthStore();
+    const { mutate: globalMutate } = useSWRConfig();
+    const { showToast } = useToast();
 
-    const pending = usePendingApprovals();
-    const inbox = useApprovalInbox(user?.id);
+    // inbox: "To Approve" (Waiting for me)
+    const inbox = useApprovalInbox();
+    // outbox: "Initiated" (My requests)
+    const outbox = useApprovalOutbox(user?.id);
     const archive = useApprovalArchive();
 
 
     const getActiveData = () => {
         switch (activeTab) {
-            case 'to-approve': return pending;
-            case 'initiated': return inbox;
+            case 'to-approve': return inbox;
+            case 'initiated': return outbox;
             case 'archive': return archive;
-            default: return pending;
+            default: return inbox;
         }
     };
 
@@ -43,15 +51,34 @@ export default function ApprovalPage() {
         );
     };
 
-    const handleBulkApprove = () => {
-        alert(`${selectedIds.length}건이 일괄 승인되었습니다.`);
-        setSelectedIds([]);
-        mutate();
+    const handleBulkApprove = async () => {
+        if (selectedIds.length === 0) return;
+        try {
+            await bulkApprove(selectedIds);
+            showToast(`${selectedIds.length}건이 일괄 승인되었습니다.`, 'success');
+            setSelectedIds([]);
+            mutate();
+            globalMutate((key) => Array.isArray(key) && key[0] === 'dashboard'); // Update dashboard stats
+        } catch (error) {
+            showToast('일괄 승인에 실패했습니다.', 'error');
+        }
     };
 
-    const handleQuickApprove = (id: number) => {
-        alert(`문서 #${id}가 승인되었습니다.`);
-        mutate();
+    const handleQuickApprove = async (id: number) => {
+        try {
+            // Find request to get stepId? 
+            // The ApprovalList calls this with docId. We need stepId to approve.
+            // Simplified assumption: The backend 'bulk-approve' or a new 'quick-approve' endpoint handles it by docId.
+            // OR we iterate over data to find the current stepId for the user.
+            // Since we implemented `bulkApprove` taking IDs, let's use that for single item too or proper API.
+            // Let's use bulkApprove([id]) for consistent generic approval of "my pending step".
+            await bulkApprove([id]);
+            showToast(`문서 #${id}가 승인되었습니다.`, 'success');
+            mutate();
+            globalMutate((key) => Array.isArray(key) && key[0] === 'dashboard');
+        } catch (error) {
+            showToast('승인 처리에 실패했습니다.', 'error');
+        }
     };
 
     const filteredData = (data || []).filter(item =>

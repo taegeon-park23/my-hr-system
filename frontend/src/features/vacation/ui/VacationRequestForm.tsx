@@ -27,6 +27,12 @@ export const VacationRequestForm = () => {
     const router = useRouter();
     const { user } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
+    const { showToast } = useToast();
+    const currentYear = new Date().getFullYear();
+    const { balance } = useMyVacationBalance(user?.id, currentYear);
+
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [pendingData, setPendingData] = useState<VacationFormData | null>(null);
 
     const { register, handleSubmit, control, formState: { errors } } = useForm<VacationFormData>({
         resolver: zodResolver(vacationSchema),
@@ -60,28 +66,35 @@ export const VacationRequestForm = () => {
         setDeduction(calculateDeduction());
     }, [watchedValues]);
 
-    const onSubmit = async (data: VacationFormData) => {
-        if (!user) {
-            alert('로그인이 필요합니다. 다시 로그인해주세요.');
+    const handleFormSubmit = (data: VacationFormData) => {
+        if (deduction > (balance?.remainingDays || 0) && (data.type === 'ANNUAL' || data.type === 'HALF_AM' || data.type === 'HALF_PM')) {
+            showToast('잔여 연차가 부족합니다.', 'error');
             return;
         }
+        setPendingData(data);
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirm = async () => {
+        if (!pendingData || !user) return;
 
         setIsLoading(true);
         try {
-            await vacationApi.requestVacation({ ...data, userId: user.id });
-            alert('휴가가 신청되었습니다.');
+            await vacationApi.requestVacation({ ...pendingData, userId: user.id });
+            showToast('휴가가 신청되었습니다.', 'success');
             router.push('/dashboard/vacation');
         } catch (error) {
             console.error(error);
-            alert('신청 실패');
+            showToast('휴가 신청에 실패했습니다.', 'error');
         } finally {
             setIsLoading(false);
+            setIsConfirmOpen(false);
         }
     };
 
     return (
         <Card className="p-8">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
                 <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">휴가 종류</label>
                     <Select
@@ -139,10 +152,20 @@ export const VacationRequestForm = () => {
                     type="submit"
                     isLoading={isLoading}
                     className="w-full h-12 text-lg font-bold"
+                    disabled={deduction > (balance?.remainingDays || 0) && ['ANNUAL', 'HALF_AM', 'HALF_PM'].includes(watchedValues.type)}
                 >
-                    휴가 신청 확정
+                    휴가 신청
                 </Button>
             </form>
+
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={handleConfirm}
+                title="휴가 신청 확인"
+                description={`총 ${deduction}일의 휴가를 신청하시겠습니까?`}
+                confirmLabel="신청하기"
+            />
         </Card>
     );
 };

@@ -50,3 +50,20 @@ export const useAnnouncements = () => {
     };
 };
 
+export interface MyApprovalStats {
+    pendingCount: number; // Docs I need to approve
+    inProgressCount: number; // My docs currently in progress
+}
+
+export const useMyApprovalStats = () => {
+    const { data, error, isLoading } = useSWR<MyApprovalStats>(
+        '/dashboard/my-approval-stats',
+        fetcher
+    );
+    return {
+        stats: data,
+        isLoading,
+        isError: error
+    };
+};
+

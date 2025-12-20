@@ -13,7 +13,9 @@ import { Badge } from '@/shared/ui/Badge';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 import { ApiErrorFallback } from '@/shared/ui/ApiErrorFallback';
 
-import { useMonthlyAttendance, useAttendanceSummary } from '@/features/attendance/api/attendanceApi';
+import { useMonthlyAttendance, useAttendanceSummary, checkIn, checkOut } from '@/features/attendance/api/attendanceApi';
+import { useToast } from '@/shared/ui/Toast';
+import { useSWRConfig } from 'swr';
 
 export default function AttendancePage() {
     const now = new Date();
@@ -23,6 +25,9 @@ export default function AttendancePage() {
 
     const { data: logs, isLoading: loading, isError: error, mutate } = useMonthlyAttendance(year, month);
     const { data: summary, isLoading: summaryLoading } = useAttendanceSummary(year, month);
+    const { showToast } = useToast();
+    const { mutate: globalMutate } = useSWRConfig();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
     const [selectedLog, setSelectedLog] = useState<AttendanceLog | null>(null);
@@ -65,8 +70,8 @@ export default function AttendancePage() {
                         <p className="text-sm text-slate-500 mt-1">월간 출퇴근 기록 및 근무 시간을 확인합니다.</p>
                     </div>
                     <div className="flex space-x-3">
-                        <Button onClick={() => alert('출근 체크!')}>출근하기</Button>
-                        <Button variant="secondary" onClick={() => alert('퇴근 체크!')}>퇴근하기</Button>
+                        <Button onClick={handleCheckIn} isLoading={isSubmitting}>출근하기</Button>
+                        <Button variant="secondary" onClick={handleCheckOut} isLoading={isSubmitting}>퇴근하기</Button>
                     </div>
                 </div>
 
